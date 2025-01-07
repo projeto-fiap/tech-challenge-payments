@@ -1,0 +1,58 @@
+package tech.fiap.project.infra.mapper;
+
+import tech.fiap.project.domain.entity.Item;
+import tech.fiap.project.domain.entity.Order;
+import tech.fiap.project.domain.entity.Payment;
+import tech.fiap.project.infra.entity.OrderEntity;
+
+import java.util.List;
+
+public class OrderRepositoryMapper {
+
+	private OrderRepositoryMapper() {
+	}
+
+	public static List<Order> toDomain(List<OrderEntity> orders) {
+		return orders.stream().map(OrderRepositoryMapper::toDomain).toList();
+	}
+
+	public static List<OrderEntity> toEntity(List<Order> orders) {
+		return orders.stream().map(OrderRepositoryMapper::toEntity).toList();
+	}
+
+	public static OrderEntity toEntity(Order order) {
+		if (order == null) {
+			return null;
+		}
+		OrderEntity orderEntity = new OrderEntity();
+		orderEntity.setId(order.getId());
+
+		if (order.getPayments() != null) {
+			orderEntity.setPayments(order.getPayments().stream().map(PaymentRepositoryMapper::toEntity).toList());
+		}
+		orderEntity.setCreatedDate(order.getCreatedDate());
+		orderEntity.setUpdatedDate(order.getUpdatedDate());
+		orderEntity.setAwaitingTime(order.getAwaitingTime());
+		orderEntity.setTotalPrice(order.getTotalPrice());
+		return orderEntity;
+	}
+
+	public static Order toDomain(OrderEntity orderEntity) {
+		if (orderEntity == null) {
+			return null;
+		}
+		List<Payment> payments = null;
+		if (orderEntity.getPayments() != null) {
+			payments = orderEntity.getPayments().stream().map(PaymentRepositoryMapper::toDomainWithOrder).toList();
+		}
+
+		List<Item> items = null;
+		if (orderEntity.getPayments() != null) {
+			items = orderEntity.getItems().stream().map(ItemRepositoryMapper::toDomain).toList();
+		}
+
+		return new Order(orderEntity.getId(), orderEntity.getCreatedDate(), orderEntity.getUpdatedDate(), items,
+				payments, orderEntity.getAwaitingTime(), orderEntity.getTotalPrice());
+	}
+
+}

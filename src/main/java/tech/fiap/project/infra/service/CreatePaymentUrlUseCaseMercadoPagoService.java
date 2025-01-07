@@ -49,7 +49,11 @@ public class CreatePaymentUrlUseCaseMercadoPagoService implements CreatePaymentU
 	}
 
 	private List<ItemMercadoLivreDTO> buildItems(List<Item> items) {
+
 		ArrayList<ItemMercadoLivreDTO> itemMercadoLivreDTOS = new ArrayList<>();
+		if (items == null) {
+			return itemMercadoLivreDTOS;
+		}
 		items.forEach(item -> {
 			ItemMercadoLivreDTO itemMercadoLivreDTO = new ItemMercadoLivreDTO(item.getId().toString(), "marketplace",
 					item.getName(), item.getDescription(), calculateTotalOrderUseCaseImpl.execute(items),

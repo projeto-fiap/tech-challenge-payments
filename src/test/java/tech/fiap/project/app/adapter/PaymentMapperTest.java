@@ -3,6 +3,7 @@ package tech.fiap.project.app.adapter;
 import org.junit.jupiter.api.Test;
 import tech.fiap.project.app.dto.PaymentDTO;
 import tech.fiap.project.app.dto.StatePayment;
+import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
 
 import java.math.BigDecimal;
@@ -17,8 +18,8 @@ class PaymentMapperTest {
 
 	@Test
 	void toDomain_shouldMapPaymentToPaymentDTO() {
-		Order order = new Order(1L, OrderStatus.PENDING, LocalDateTime.now(), LocalDateTime.now(), List.of(), null,
-				Duration.ZERO, null, BigDecimal.TEN);
+		Order order = new Order(1L, LocalDateTime.now(), LocalDateTime.now(), List.of(), null,
+				Duration.ZERO,  BigDecimal.TEN);
 		Payment payment = new Payment(LocalDateTime.now(), "CREDIT_CARD", BigDecimal.TEN, Currency.getInstance("USD"),
 				order, StatePayment.ACCEPTED);
 
@@ -57,7 +58,7 @@ class PaymentMapperTest {
 		paymentDTO.setPaymentDate(LocalDateTime.now());
 		paymentDTO.setPaymentMethod("CREDIT_CARD");
 		paymentDTO.setState(StatePayment.REJECTED);
-		paymentDTO.setOrder(new OrderResponsePaymentDTO(1L, OrderStatus.PENDING, LocalDateTime.now(),
+		paymentDTO.setOrder(new Order(1L, LocalDateTime.now(),
 				LocalDateTime.now(), List.of(), null, Duration.ZERO, BigDecimal.TEN));
 
 		Payment payment = PaymentMapper.toDTO(paymentDTO);

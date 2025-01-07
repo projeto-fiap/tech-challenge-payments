@@ -12,14 +12,6 @@ public class OrderRepositoryMapper {
 	private OrderRepositoryMapper() {
 	}
 
-	public static List<Order> toDomain(List<OrderEntity> orders) {
-		return orders.stream().map(OrderRepositoryMapper::toDomain).toList();
-	}
-
-	public static List<OrderEntity> toEntity(List<Order> orders) {
-		return orders.stream().map(OrderRepositoryMapper::toEntity).toList();
-	}
-
 	public static OrderEntity toEntity(Order order) {
 		if (order == null) {
 			return null;

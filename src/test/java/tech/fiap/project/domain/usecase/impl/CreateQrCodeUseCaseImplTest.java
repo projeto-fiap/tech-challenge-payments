@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.usecase.CreatePaymentUrlUseCase;
 
 import java.awt.image.BufferedImage;
@@ -30,7 +31,7 @@ class CreateQrCodeUseCaseImplTest {
 
 	@Test
 	void execute_generatesQrCodeSuccessfully() {
-		Order order = new Order(1L, null, null, null, null, null, null, null, null);
+		Order order = new Order(1L,  null, null, null, null, null, null);
 		String paymentUrl = "http://payment.url";
 		BufferedImage qrCodeImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
 

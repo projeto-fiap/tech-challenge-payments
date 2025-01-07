@@ -14,8 +14,8 @@ class ItemRepositoryMapperTest {
 
 	@Test
 	void toEntity_shouldMapItemToItemEntity() {
-		Item item = new Item(1L, "Item Name", BigDecimal.valueOf(10.0), BigDecimal.ONE, "Unit",
-				List.of(), "Description", "ImageUrl");
+		Item item = new Item(1L, "Item Name", BigDecimal.valueOf(10.0), BigDecimal.ONE, "Unit", List.of(),
+				"Description", "ImageUrl");
 		ItemEntity itemEntity = ItemRepositoryMapper.toEntity(item);
 
 		assertEquals(item.getId(), itemEntity.getId());

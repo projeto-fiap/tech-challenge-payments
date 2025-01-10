@@ -19,11 +19,12 @@ public class WebSecurityConfig {
 		http.authorizeHttpRequests(authorize -> {
 
 			authorize.requestMatchers(HttpMethod.POST, "/api/v1/payments/**").permitAll()
-					.requestMatchers(HttpMethod.GET,"/api/v1/payments/**").permitAll()
-					.requestMatchers(HttpMethod.GET,"/api/v1/receipts/**").permitAll();
-//					.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
-//							"/webjars/**")
-//					.authenticated();
+					.requestMatchers(HttpMethod.GET, "/api/v1/payments/**").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/v1/receipts/**").permitAll();
+			// .requestMatchers("/swagger-ui.html", "/swagger-ui/**",
+			// "/swagger-resources/**", "/v3/api-docs/**",
+			// "/webjars/**")
+			// .authenticated();
 
 		}).csrf(AbstractHttpConfigurer::disable).httpBasic(withDefaults());
 		return http.build();

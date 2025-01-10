@@ -37,16 +37,16 @@ public class ReceiptController {
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_PDF);
 				headers.setContentDispositionFormData("attachment", pdfFile.getName());
-				headers.add("receiptId",id);
-					return ResponseEntity.ok()
-						.headers(headers)
-						.body(pdfBytes);
-//				TODO PIX CPF 87520532100
-			} catch (IOException e) {
+				headers.add("receiptId", id);
+				return ResponseEntity.ok().headers(headers).body(pdfBytes);
+				// TODO PIX CPF 87520532100
+			}
+			catch (IOException e) {
 				log.error("Error reading PDF file: {}", e.getMessage());
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 			}
-		} else {
+		}
+		else {
 			log.error("Failed to generate PDF file.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}

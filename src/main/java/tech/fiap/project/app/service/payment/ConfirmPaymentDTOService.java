@@ -15,12 +15,13 @@ import java.util.Optional;
 public class ConfirmPaymentDTOService {
 
 	private final GenerateReceipt generateReceipt;
+
 	private final RetrievePaymentUseCase retrievePaymentUseCase;
 
 	public Receipt confirmPayment(Long paymentId) {
 		Optional<Payment> payment = retrievePaymentUseCase.findById(paymentId);
-        if (payment.isEmpty()) {
-            throw new PaymentNotFound(paymentId.toString());
+		if (payment.isEmpty()) {
+			throw new PaymentNotFound(paymentId.toString());
 		}
 		return generateReceipt.confirmPayment(payment.get());
 	}

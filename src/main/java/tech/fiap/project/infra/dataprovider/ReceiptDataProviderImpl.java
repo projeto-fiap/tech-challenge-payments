@@ -26,21 +26,25 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 public class ReceiptDataProviderImpl implements ReceiptDataProvider {
 
 	private final GridFsTemplate gridFsTemplate;
+
 	private final GridFsOperations gridFsOperations;
 
 	public File retrieveFile(String fileId) {
 		try {
-			GridFSFile receipt =findFileById(fileId);
+			GridFSFile receipt = findFileById(fileId);
 			GridFsResource resource = gridFsOperations.getResource(receipt);
-			String absolutePath = ResourceUtils.getFile("classpath:TEMP").getAbsolutePath() + "/comprovante_pagamento.pdf";
+			String absolutePath = ResourceUtils.getFile("classpath:TEMP").getAbsolutePath()
+					+ "/comprovante_pagamento.pdf";
 			File file = new File(absolutePath);
 			try {
 				Files.copy(resource.getInputStream(), file.toPath());
-			}catch (FileAlreadyExistsException e){
-				log.info("Arquivo {} ja existe",file);
+			}
+			catch (FileAlreadyExistsException e) {
+				log.info("Arquivo {} ja existe", file);
 			}
 			return file;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new FileNotFound(e);
 		}
 	}
@@ -49,11 +53,13 @@ public class ReceiptDataProviderImpl implements ReceiptDataProvider {
 		ObjectId objectId = new ObjectId(fileId);
 		return gridFsTemplate.findOne(query(where("_id").is(objectId)));
 	}
+
 	@Override
 	public String save(File file) {
 		try (InputStream fileStream = Files.newInputStream(file.toPath())) {
 			return storeFile(fileStream, file.getName(), Files.probeContentType(file.toPath()));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new RuntimeException("Erro ao salvar o arquivo", e);
 		}
 	}
@@ -62,4 +68,5 @@ public class ReceiptDataProviderImpl implements ReceiptDataProvider {
 		ObjectId fileId = gridFsTemplate.store(fileStream, fileName, contentType);
 		return fileId.toString();
 	}
+
 }

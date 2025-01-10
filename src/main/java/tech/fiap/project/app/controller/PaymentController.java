@@ -30,52 +30,52 @@ import java.util.List;
 @Slf4j
 public class PaymentController {
 
-    private final RetrievePaymentService retrievePaymentService;
+	private final RetrievePaymentService retrievePaymentService;
 
-    private final CreatePaymentService createPaymentService;
+	private final CreatePaymentService createPaymentService;
 
-    private final ConfirmPaymentDTOService confirmPayment;
+	private final ConfirmPaymentDTOService confirmPayment;
 
-    @PostMapping("/confirm/mock/{id}")
-    public ResponseEntity<byte[]> confirmPayment(@PathVariable Long id) throws IOException {
-        Receipt receipt = confirmPayment.confirmPayment(id);
-        File pdfFile = receipt.getFile();
-        byte[] pdfBytes;
-        if (pdfFile != null && pdfFile.exists()) {
-            try (FileInputStream fileInputStream = new FileInputStream(pdfFile)) {
-                pdfBytes = fileInputStream.readAllBytes();
-                log.info("PDF generated and returned successfully: {}", pdfFile.getName());
-            } catch (IOException e) {
-                log.error("Error reading PDF file: {}", e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", pdfFile.getName());
-            headers.add("receiptId", receipt.getId());
-            Files.delete(Path.of(pdfFile.getPath()));
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(pdfBytes);
-//				TODO PIX CPF 87520532100
-        } else {
-            log.error("Failed to generate PDF file.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+	@PostMapping("/confirm/mock/{id}")
+	public ResponseEntity<byte[]> confirmPayment(@PathVariable Long id) throws IOException {
+		Receipt receipt = confirmPayment.confirmPayment(id);
+		File pdfFile = receipt.getFile();
+		byte[] pdfBytes;
+		if (pdfFile != null && pdfFile.exists()) {
+			try (FileInputStream fileInputStream = new FileInputStream(pdfFile)) {
+				pdfBytes = fileInputStream.readAllBytes();
+				log.info("PDF generated and returned successfully: {}", pdfFile.getName());
+			}
+			catch (IOException e) {
+				log.error("Error reading PDF file: {}", e.getMessage());
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_PDF);
+			headers.setContentDispositionFormData("attachment", pdfFile.getName());
+			headers.add("receiptId", receipt.getId());
+			Files.delete(Path.of(pdfFile.getPath()));
+			return ResponseEntity.ok().headers(headers).body(pdfBytes);
+			// TODO PIX CPF 87520532100
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+	}
 
-    @GetMapping
-    public ResponseEntity<List<PaymentDTO>> listAll() {
-        List<PaymentDTO> payments = retrievePaymentService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(payments);
-    }
+	@GetMapping
+	public ResponseEntity<List<PaymentDTO>> listAll() {
+		List<PaymentDTO> payments = retrievePaymentService.findAll();
+		return ResponseEntity.status(HttpStatus.OK).body(payments);
+	}
 
-    @PostMapping(produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<BufferedImage> createPayment(@RequestBody Order order) {
-        PaymentQrcode paymentQrcode = createPaymentService.execute(order);
-        BufferedImage qrcode = paymentQrcode.getQrcode();
-        MultiValueMap<String, String> headers = new HttpHeaders();
-        headers.put("paymentId", Collections.singletonList(paymentQrcode.getPayment().getId().toString()));
-        return new ResponseEntity<>(qrcode, headers, HttpStatusCode.valueOf(200));
-    }
+	@PostMapping(produces = MediaType.IMAGE_PNG_VALUE)
+	public ResponseEntity<BufferedImage> createPayment(@RequestBody Order order) {
+		PaymentQrcode paymentQrcode = createPaymentService.execute(order);
+		BufferedImage qrcode = paymentQrcode.getQrcode();
+		MultiValueMap<String, String> headers = new HttpHeaders();
+		headers.put("paymentId", Collections.singletonList(paymentQrcode.getPayment().getId().toString()));
+		return new ResponseEntity<>(qrcode, headers, HttpStatusCode.valueOf(200));
+	}
+
 }

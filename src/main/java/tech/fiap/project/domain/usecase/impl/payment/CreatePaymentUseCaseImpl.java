@@ -11,20 +11,19 @@ import java.awt.image.BufferedImage;
 
 public class CreatePaymentUseCaseImpl implements CreatePaymentUseCase {
 
-
 	private final CreateQrCodeUseCase generateQrCode;
 
 	private final CreatePayment createPayment;
 
 	public CreatePaymentUseCaseImpl(CreateQrCodeUseCase generateQrCode, CreatePayment createPayment) {
 		this.generateQrCode = generateQrCode;
-        this.createPayment = createPayment;
-    }
+		this.createPayment = createPayment;
+	}
 
 	public PaymentQrcode execute(Order order) {
 		Payment payment = createPayment.execute(order);
 		BufferedImage qrcode = generateQrCode.execute(order);
-		return new PaymentQrcode(payment,qrcode);
+		return new PaymentQrcode(payment, qrcode);
 	}
 
 }

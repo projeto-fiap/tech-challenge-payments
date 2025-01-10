@@ -37,9 +37,9 @@ class RetrievePaymentUseCaseImplTest {
 	@Test
 	void findAll_returnsAllPayments() {
 		Order order = new Order(1L, null, LocalDateTime.now(), null, null, null, BigDecimal.TEN);
-		Payment payment1 = new Payment(3L,LocalDateTime.now(), "Credit Card", BigDecimal.TEN, Currency.getInstance("USD"),
-				order, StatePayment.ACCEPTED);
-		Payment payment2 = new Payment(3L,LocalDateTime.now(), "Debit Card", BigDecimal.valueOf(20),
+		Payment payment1 = new Payment(3L, LocalDateTime.now(), "Credit Card", BigDecimal.TEN,
+				Currency.getInstance("USD"), order, StatePayment.ACCEPTED);
+		Payment payment2 = new Payment(3L, LocalDateTime.now(), "Debit Card", BigDecimal.valueOf(20),
 				Currency.getInstance("USD"), order, StatePayment.REJECTED);
 		when(paymentDataProvider.retrieveAll()).thenReturn(Arrays.asList(payment1, payment2));
 
@@ -53,8 +53,8 @@ class RetrievePaymentUseCaseImplTest {
 	@Test
 	void findById_returnsPaymentById() {
 		Order order = new Order(1L, null, LocalDateTime.now(), null, null, null, BigDecimal.TEN);
-		Payment payment = new Payment(3L,LocalDateTime.now(), "Credit Card", BigDecimal.TEN, Currency.getInstance("USD"),
-				order, StatePayment.ACCEPTED);
+		Payment payment = new Payment(3L, LocalDateTime.now(), "Credit Card", BigDecimal.TEN,
+				Currency.getInstance("USD"), order, StatePayment.ACCEPTED);
 		when(paymentDataProvider.retrieveById(1L)).thenReturn(Optional.of(payment));
 
 		Optional<Payment> result = retrievePaymentUseCaseImpl.findById(1L);

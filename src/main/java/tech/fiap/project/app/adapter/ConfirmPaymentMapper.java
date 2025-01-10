@@ -10,7 +10,7 @@ public class ConfirmPaymentMapper {
 	}
 
 	public static ConfirmPayment toDomain(ConfirmPaymentDTO confirmPaymentDTO) {
-		if (confirmPaymentDTO ==null){
+		if (confirmPaymentDTO == null) {
 			return null;
 		}
 		ConfirmPayment confirmPayment = new ConfirmPayment();
@@ -18,4 +18,5 @@ public class ConfirmPaymentMapper {
 		confirmPayment.setOrder(OrderMapper.toDomain(confirmPaymentDTO.getOrder()));
 		return confirmPayment;
 	}
+
 }

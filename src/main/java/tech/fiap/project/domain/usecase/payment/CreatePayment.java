@@ -5,6 +5,6 @@ import tech.fiap.project.domain.entity.Payment;
 
 public interface CreatePayment {
 
-    Payment execute(Order order);
+	Payment execute(Order order);
 
 }

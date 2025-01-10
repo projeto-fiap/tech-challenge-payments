@@ -57,8 +57,8 @@ public class CreatePaymentUrlUseCaseMercadoPagoService implements CreatePaymentU
 		}
 		items.forEach(item -> {
 			ItemMercadoLivreDTO itemMercadoLivreDTO = new ItemMercadoLivreDTO(item.getId().toString(), "marketplace",
-					item.getName(), item.getDescription(),item.getPrice(),
-					item.getQuantity().intValue(), item.getUnit(), item.getPrice().multiply(item.getQuantity()));
+					item.getName(), item.getDescription(), item.getPrice(), item.getQuantity().intValue(),
+					item.getUnit(), item.getPrice().multiply(item.getQuantity()));
 			itemMercadoLivreDTOS.add(itemMercadoLivreDTO);
 		});
 		return itemMercadoLivreDTOS;
@@ -78,8 +78,7 @@ public class CreatePaymentUrlUseCaseMercadoPagoService implements CreatePaymentU
 	}
 
 	private BigDecimal sumItensPrice(List<Item> items) {
-		return items.stream()
-				.map(Item::getPrice)
-				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		return items.stream().map(Item::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
+
 }

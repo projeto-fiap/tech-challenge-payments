@@ -13,9 +13,9 @@ public class RetrieveReceiptUseCaseImpl implements RetrieveReceiptUseCase {
 		this.receiptDataProvider = receiptDataProvider;
 	}
 
-
 	@Override
 	public File findById(String id) {
 		return receiptDataProvider.retrieveFile(id);
 	}
+
 }

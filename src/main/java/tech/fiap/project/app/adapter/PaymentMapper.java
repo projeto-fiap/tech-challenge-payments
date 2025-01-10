@@ -51,8 +51,8 @@ public class PaymentMapper {
 			return null;
 		}
 		else {
-			return new Payment(payment.getId(),payment.getPaymentDate(), payment.getPaymentMethod(), payment.getAmount(),
-					payment.getCurrency(), payment.getOrder(), payment.getState());
+			return new Payment(payment.getId(), payment.getPaymentDate(), payment.getPaymentMethod(),
+					payment.getAmount(), payment.getCurrency(), payment.getOrder(), payment.getState());
 		}
 	}
 

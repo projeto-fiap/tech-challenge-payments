@@ -81,13 +81,15 @@ public class Configuration {
 	}
 
 	@Bean
-	public CreatePaymentImpl createPayment(PaymentDataProvider createPayment,CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase) {
-		return new CreatePaymentImpl(createPayment,calculateTotalOrderUseCase);
+	public CreatePaymentImpl createPayment(PaymentDataProvider createPayment,
+			CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase) {
+		return new CreatePaymentImpl(createPayment, calculateTotalOrderUseCase);
 	}
 
 	@Bean
-	public CreatePaymentUseCaseImpl createPaymentUseCase(CreateQrCodeUseCase createQrCodeUseCase, CreatePayment createPayment) {
-		return new CreatePaymentUseCaseImpl(createQrCodeUseCase,createPayment);
+	public CreatePaymentUseCaseImpl createPaymentUseCase(CreateQrCodeUseCase createQrCodeUseCase,
+			CreatePayment createPayment) {
+		return new CreatePaymentUseCaseImpl(createQrCodeUseCase, createPayment);
 	}
 
 	@Bean

@@ -16,6 +16,4 @@ public class CreatePaymentService {
 		return createPaymentUseCase.execute(order);
 	}
 
-
-
 }

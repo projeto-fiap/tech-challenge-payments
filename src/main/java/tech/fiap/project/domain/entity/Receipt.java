@@ -10,6 +10,7 @@ import java.io.File;
 public class Receipt {
 
 	private String id;
+
 	private File file;
 
 }

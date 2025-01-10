@@ -11,6 +11,7 @@ import java.util.Currency;
 public class PaymentDTO {
 
 	private Long id;
+
 	private LocalDateTime paymentDate;
 
 	private String paymentMethod;

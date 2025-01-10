@@ -17,7 +17,7 @@ class PaymentRepositoryMapperTest {
 
 	@Test
 	void toEntity_shouldMapPaymentToPaymentEntity() {
-		Payment payment = new Payment(4L,LocalDateTime.now(), "Credit Card", BigDecimal.valueOf(100.0),
+		Payment payment = new Payment(4L, LocalDateTime.now(), "Credit Card", BigDecimal.valueOf(100.0),
 				Currency.getInstance("BRL"), null, StatePayment.ACCEPTED);
 		PaymentEntity paymentEntity = PaymentRepositoryMapper.toEntity(payment);
 
@@ -36,7 +36,7 @@ class PaymentRepositoryMapperTest {
 
 	@Test
 	void toEntityWithoutOrder_shouldMapPaymentToPaymentEntityWithoutOrder() {
-		Payment payment = new Payment(6L,LocalDateTime.now(), "Credit Card", BigDecimal.valueOf(100.0),
+		Payment payment = new Payment(6L, LocalDateTime.now(), "Credit Card", BigDecimal.valueOf(100.0),
 				Currency.getInstance("BRL"), null, StatePayment.ACCEPTED);
 
 		PaymentEntity paymentEntity = PaymentRepositoryMapper.toEntityWithoutOrder(payment);

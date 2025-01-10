@@ -29,7 +29,8 @@ public class PaymentDataProviderImpl implements PaymentDataProvider {
 	@Override
 	public Payment create(Payment payment) {
 		payment.setOrder(null);
-		return PaymentRepositoryMapper.toDomainWithOrder(paymentRepository.save(PaymentRepositoryMapper.toEntity(payment)));
+		return PaymentRepositoryMapper
+				.toDomainWithOrder(paymentRepository.save(PaymentRepositoryMapper.toEntity(payment)));
 	}
 
 }

@@ -12,20 +12,23 @@ import java.util.Currency;
 
 public class CreatePaymentImpl implements CreatePayment {
 
-    private final PaymentDataProvider paymentDataProvider;
-    private final CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase;
+	private final PaymentDataProvider paymentDataProvider;
 
-    public CreatePaymentImpl(PaymentDataProvider paymentDataProvider, CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase) {
-        this.paymentDataProvider = paymentDataProvider;
-        this.calculateTotalOrderUseCase = calculateTotalOrderUseCase;
-    }
+	private final CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase;
 
-    @Override
-    public Payment execute(Order order) {
-        LocalDateTime now = LocalDateTime.now();
-        Currency currency = Currency.getInstance("BRL");
-        Payment payment = new Payment(null,now, "PIX", calculateTotalOrderUseCase.execute(order.getItems()), currency, order, StatePayment.AWAITING);
-        return paymentDataProvider.create(payment);
-    }
+	public CreatePaymentImpl(PaymentDataProvider paymentDataProvider,
+			CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase) {
+		this.paymentDataProvider = paymentDataProvider;
+		this.calculateTotalOrderUseCase = calculateTotalOrderUseCase;
+	}
+
+	@Override
+	public Payment execute(Order order) {
+		LocalDateTime now = LocalDateTime.now();
+		Currency currency = Currency.getInstance("BRL");
+		Payment payment = new Payment(null, now, "PIX", calculateTotalOrderUseCase.execute(order.getItems()), currency,
+				order, StatePayment.AWAITING);
+		return paymentDataProvider.create(payment);
+	}
 
 }

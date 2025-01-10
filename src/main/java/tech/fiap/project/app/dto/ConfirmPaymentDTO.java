@@ -5,7 +5,9 @@ import lombok.Data;
 @Data
 public class ConfirmPaymentDTO {
 
-	private ConfirmPaymentOrderDTO order;
+	private OrderDTO order;
+
+	private PaymentDTO paymentDTO;
 
 	private StatePayment state;
 

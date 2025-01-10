@@ -20,7 +20,7 @@ class PaymentMapperTest {
 	void toDomain_shouldMapPaymentToPaymentDTO() {
 		Order order = new Order(1L, LocalDateTime.now(), LocalDateTime.now(), List.of(), null, Duration.ZERO,
 				BigDecimal.TEN);
-		Payment payment = new Payment(LocalDateTime.now(), "CREDIT_CARD", BigDecimal.TEN, Currency.getInstance("USD"),
+		Payment payment = new Payment(1L,LocalDateTime.now(), "CREDIT_CARD", BigDecimal.TEN, Currency.getInstance("USD"),
 				order, StatePayment.ACCEPTED);
 
 		PaymentDTO paymentDTO = PaymentMapper.toDomain(payment);
@@ -36,7 +36,7 @@ class PaymentMapperTest {
 
 	@Test
 	void toDomainWithoutOrder_shouldMapPaymentToPaymentDTOWithoutOrder() {
-		Payment payment = new Payment(LocalDateTime.now(), "CREDIT_CARD", BigDecimal.TEN, Currency.getInstance("USD"),
+		Payment payment = new Payment(2L,LocalDateTime.now(), "CREDIT_CARD", BigDecimal.TEN, Currency.getInstance("USD"),
 				null, StatePayment.ACCEPTED);
 
 		PaymentDTO paymentDTO = PaymentMapper.toDomainWithoutOrder(payment);

@@ -17,6 +17,7 @@ public class PaymentRepositoryMapper {
 		}
 		else {
 			PaymentEntity paymentEntity = new PaymentEntity();
+			paymentEntity.setId(payment.getId());
 			paymentEntity.setAmount(payment.getAmount());
 			paymentEntity.setCurrency(payment.getCurrency());
 			paymentEntity.setPaymentDate(payment.getPaymentDate());
@@ -35,6 +36,7 @@ public class PaymentRepositoryMapper {
 		}
 		else {
 			PaymentEntity paymentEntity = new PaymentEntity();
+			paymentEntity.setId(payment.getId());
 			paymentEntity.setAmount(payment.getAmount());
 			paymentEntity.setCurrency(payment.getCurrency());
 			paymentEntity.setPaymentDate(payment.getPaymentDate());
@@ -49,7 +51,7 @@ public class PaymentRepositoryMapper {
 			return null;
 		}
 		else {
-			return new Payment(paymentEntity.getPaymentDate(), paymentEntity.getPaymentMethod(),
+			return new Payment(paymentEntity.getId(),paymentEntity.getPaymentDate(), paymentEntity.getPaymentMethod(),
 					paymentEntity.getAmount(), paymentEntity.getCurrency(), null, paymentEntity.getState());
 		}
 	}
@@ -65,7 +67,7 @@ public class PaymentRepositoryMapper {
 				order.setPayments(null);
 				domain = OrderRepositoryMapper.toDomain(order);
 			}
-			return new Payment(paymentEntity.getPaymentDate(), paymentEntity.getPaymentMethod(),
+			return new Payment(paymentEntity.getId(),paymentEntity.getPaymentDate(), paymentEntity.getPaymentMethod(),
 					paymentEntity.getAmount(), paymentEntity.getCurrency(), domain, paymentEntity.getState());
 		}
 	}

@@ -1,4 +1,4 @@
-package tech.fiap.project.domain.entity;
+package tech.fiap.project.app.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,23 +8,18 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Order {
+@NoArgsConstructor
+@Setter
+public class OrderDTO {
 
 	private Long id;
 
 	private LocalDateTime createdDate;
 
 	private LocalDateTime updatedDate;
-
-	private List<Item> items;
-
-	private List<Payment> payments;
 
 	private Duration awaitingTime;
 

@@ -11,4 +11,6 @@ public interface PaymentDataProvider {
 
 	Optional<Payment> retrieveById(Long id);
 
+	Payment create(Payment payment);
+
 }

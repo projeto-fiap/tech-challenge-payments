@@ -34,7 +34,7 @@ class RetrievePaymentServiceTest {
 
 	@Test
 	void findAll_shouldReturnListOfPaymentDTOs() {
-		Payment e1 = new Payment(LocalDateTime.now(), "PIX", BigDecimal.valueOf(100.0), Currency.getInstance("BRL"),
+		Payment e1 = new Payment(3L,LocalDateTime.now(), "PIX", BigDecimal.valueOf(100.0), Currency.getInstance("BRL"),
 				null, StatePayment.ACCEPTED);
 		List<Payment> payments = List.of(e1, e1);
 		List<PaymentDTO> paymentDTOs = payments.stream().map(PaymentMapper::toDomain).toList();

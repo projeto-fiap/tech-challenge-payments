@@ -26,4 +26,10 @@ public class PaymentDataProviderImpl implements PaymentDataProvider {
 		return paymentRepository.findById(id).map(PaymentRepositoryMapper::toDomainWithoutOrder);
 	}
 
+	@Override
+	public Payment create(Payment payment) {
+		payment.setOrder(null);
+		return PaymentRepositoryMapper.toDomainWithOrder(paymentRepository.save(PaymentRepositoryMapper.toEntity(payment)));
+	}
+
 }

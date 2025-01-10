@@ -14,6 +14,8 @@ import java.util.Currency;
 @AllArgsConstructor
 public class Payment {
 
+	private Long id;
+
 	private LocalDateTime paymentDate;
 
 	private String paymentMethod;

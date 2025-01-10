@@ -15,6 +15,8 @@ public class PaymentMapper {
 		}
 		else {
 			PaymentDTO paymentDTO = new PaymentDTO();
+			paymentDTO.setId(payment.getId());
+			paymentDTO.setOrder(payment.getOrder());
 			paymentDTO.setAmount(payment.getAmount());
 			paymentDTO.setCurrency(payment.getCurrency());
 			paymentDTO.setPaymentDate(payment.getPaymentDate());
@@ -34,10 +36,12 @@ public class PaymentMapper {
 		else {
 			PaymentDTO paymentDTO = new PaymentDTO();
 			paymentDTO.setAmount(payment.getAmount());
+			paymentDTO.setId(payment.getId());
 			paymentDTO.setCurrency(payment.getCurrency());
 			paymentDTO.setPaymentDate(payment.getPaymentDate());
 			paymentDTO.setPaymentMethod(payment.getPaymentMethod());
 			paymentDTO.setState(payment.getState());
+			paymentDTO.setOrder(payment.getOrder());
 			return paymentDTO;
 		}
 	}
@@ -47,7 +51,7 @@ public class PaymentMapper {
 			return null;
 		}
 		else {
-			return new Payment(payment.getPaymentDate(), payment.getPaymentMethod(), payment.getAmount(),
+			return new Payment(payment.getId(),payment.getPaymentDate(), payment.getPaymentMethod(), payment.getAmount(),
 					payment.getCurrency(), payment.getOrder(), payment.getState());
 		}
 	}

@@ -7,11 +7,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import tech.fiap.project.app.dto.ConfirmPaymentDTO;
 import tech.fiap.project.app.dto.PaymentDTO;
-import tech.fiap.project.app.service.payment.RetrievePaymentService;
 import tech.fiap.project.app.service.payment.ConfirmPaymentDTOService;
+import tech.fiap.project.app.service.payment.RetrievePaymentService;
+import tech.fiap.project.domain.entity.Receipt;
 
+import java.io.File;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,15 +36,11 @@ class PaymentControllerTest {
 
 	@Test
 	void confirmPayment_shouldReturnPaymentDTO_whenSuccessful() {
-		ConfirmPaymentDTO confirmPaymentDTO = new ConfirmPaymentDTO();
-		PaymentDTO paymentDTO = new PaymentDTO();
-
-		when(confirmPaymentDTOService.confirmPayment(confirmPaymentDTO)).thenReturn(paymentDTO);
-
-		ResponseEntity<PaymentDTO> response = paymentController.confirmPayment(confirmPaymentDTO);
-
+		File file = new File("");
+		Receipt receipt = new Receipt("123",file);
+		when(confirmPaymentDTOService.confirmPayment(1L)).thenReturn(receipt);
+		ResponseEntity<byte[]> response = paymentController.confirmPayment(1L);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(paymentDTO, response.getBody());
 	}
 
 	@Test

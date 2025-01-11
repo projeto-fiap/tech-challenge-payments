@@ -17,7 +17,6 @@ import tech.fiap.project.domain.usecase.impl.order.CalculateTotalOrderUseCaseImp
 import tech.fiap.project.infra.configuration.MercadoPagoConstants;
 import tech.fiap.project.infra.configuration.MercadoPagoProperties;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,11 +44,11 @@ public class CreatePaymentUrlUseCaseMercadoPagoService implements CreatePaymentU
 		return Objects.requireNonNull(exchange.getBody()).getQrData();
 	}
 
-	private String buildDescription(Long orderId) {
+	protected String buildDescription(Long orderId) {
 		return "Pagamento do pedido " + orderId;
 	}
 
-	private List<ItemMercadoLivreDTO> buildItems(List<Item> items) {
+	protected List<ItemMercadoLivreDTO> buildItems(List<Item> items) {
 
 		ArrayList<ItemMercadoLivreDTO> itemMercadoLivreDTOS = new ArrayList<>();
 		if (items == null) {
@@ -75,10 +74,6 @@ public class CreatePaymentUrlUseCaseMercadoPagoService implements CreatePaymentU
 		String userId = mercadoPagoProperties.getUserId();
 		String pos = mercadoPagoProperties.getPos();
 		return String.format(MercadoPagoConstants.BASE_PAYMENT_METHOD, userId, pos);
-	}
-
-	private BigDecimal sumItensPrice(List<Item> items) {
-		return items.stream().map(Item::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 }

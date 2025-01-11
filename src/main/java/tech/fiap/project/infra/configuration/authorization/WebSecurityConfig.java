@@ -16,17 +16,23 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(authorize -> {
-
+		http.authorizeHttpRequests(authorize ->
 			authorize.requestMatchers(HttpMethod.POST, "/api/v1/payments/**").permitAll()
 					.requestMatchers(HttpMethod.GET, "/api/v1/payments/**").permitAll()
-					.requestMatchers(HttpMethod.GET, "/api/v1/receipts/**").permitAll();
-			// .requestMatchers("/swagger-ui.html", "/swagger-ui/**",
-			// "/swagger-resources/**", "/v3/api-docs/**",
-			// "/webjars/**")
-			// .authenticated();
+					.requestMatchers(HttpMethod.GET, "/api/v1/receipts/**").permitAll()
+					// Definindo as URLs para serem protegidas com autenticação OAuth2
+					.requestMatchers("/api/v1/secure/**").authenticated().anyRequest().denyAll() // Proibindo
+																									// outras
+																									// requisições
+																									// não
+																									// autenticadas.
 
-		}).csrf(AbstractHttpConfigurer::disable).httpBasic(withDefaults());
+		)			// Desabilitando CSRF para permitir chamadas de APIs de outros servidores
+				.csrf(AbstractHttpConfigurer::disable).oauth2Login(withDefaults()); // Configura
+																					// o
+																					// login
+																					// OAuth2
+
 		return http.build();
 	}
 

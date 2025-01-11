@@ -2,11 +2,11 @@ package tech.fiap.project.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
 @AllArgsConstructor
 public class ItemMercadoLivreDTO {
 

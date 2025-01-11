@@ -72,4 +72,22 @@ class PaymentMapperTest {
 		assertNotNull(payment.getOrder());
 	}
 
+	@Test
+	void toDomain_shouldReturnNull_whenPaymentIsNull() {
+		PaymentDTO paymentDTO = PaymentMapper.toDomain(null);
+		assertNull(paymentDTO);
+	}
+
+	@Test
+	void toDomainWithoutOrder_shouldReturnNull_whenPaymentIsNull() {
+		PaymentDTO paymentDTO = PaymentMapper.toDomainWithoutOrder(null);
+		assertNull(paymentDTO);
+	}
+
+	@Test
+	void toDTO_shouldReturnNull_whenPaymentDTOIsNull() {
+		Payment payment = PaymentMapper.toDTO(null);
+		assertNull(payment);
+	}
+
 }

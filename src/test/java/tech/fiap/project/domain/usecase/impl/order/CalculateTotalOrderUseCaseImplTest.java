@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import tech.fiap.project.domain.entity.Item;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,6 +56,34 @@ class CalculateTotalOrderUseCaseImplTest {
 		BigDecimal total = calculateTotalOrderUseCase.execute(items);
 
 		assertEquals(BigDecimal.valueOf(15), total);
+	}
+
+	@Test
+	void buildListIngredients_shouldHandleNonNullAndNonEmptyIngredients() {
+		// Arrange: Criação de itens com ingredientes
+		Item subIngredient1 = new Item(1L, "Tomato", BigDecimal.valueOf(2.50), BigDecimal.ONE, "unit",
+				new ArrayList<>(), "", "");
+		Item subIngredient2 = new Item(2L, "Cheese", BigDecimal.valueOf(5.00), BigDecimal.ONE, "unit",
+				new ArrayList<>(), "", "");
+
+		List<Item> ingredientList = new ArrayList<>();
+		ingredientList.add(subIngredient1);
+		ingredientList.add(subIngredient2);
+
+		Item mainIngredient = new Item(3L, "Pizza Base", BigDecimal.valueOf(15.00), BigDecimal.ONE, "UNIT",
+				ingredientList, "", "");
+
+		List<Item> mainIngredientsList = new ArrayList<>();
+		mainIngredientsList.add(mainIngredient);
+
+		// Act: Chama a função buildListIngredients diretamente
+		List<Item> result = calculateTotalOrderUseCase.buildListIngredients(mainIngredientsList);
+
+		// Assert: Verifica se os ingredientes foram processados corretamente
+		assertEquals(2, result.size()); // Deve conter os dois subingredientes (Tomato e
+										// Cheese)
+		assertEquals("Tomato", result.get(0).getName());
+		assertEquals("Cheese", result.get(1).getName());
 	}
 
 }

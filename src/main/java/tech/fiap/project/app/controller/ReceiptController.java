@@ -39,7 +39,6 @@ public class ReceiptController {
 				headers.setContentDispositionFormData("attachment", pdfFile.getName());
 				headers.add("receiptId", id);
 				return ResponseEntity.ok().headers(headers).body(pdfBytes);
-				// TODO PIX CPF 87520532100
 			}
 			catch (IOException e) {
 				log.error("Error reading PDF file: {}", e.getMessage());

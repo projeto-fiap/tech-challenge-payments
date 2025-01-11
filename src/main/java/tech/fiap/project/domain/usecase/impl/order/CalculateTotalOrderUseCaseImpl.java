@@ -29,11 +29,11 @@ public class CalculateTotalOrderUseCaseImpl implements CalculateTotalOrderUseCas
 				BigDecimal::add);
 	}
 
-	private List<Item> buildListIngredients(List<Item> items) {
+	protected List<Item> buildListIngredients(List<Item> items) {
 		List<Item> ingredients = new ArrayList<>();
 		items.forEach(item -> {
 			if (item.getIngredients() != null && !item.getIngredients().isEmpty()) {
-				buildListIngredients(item.getIngredients());
+				ingredients.addAll(buildListIngredients(item.getIngredients()));
 			}
 			else {
 				ingredients.add(item);

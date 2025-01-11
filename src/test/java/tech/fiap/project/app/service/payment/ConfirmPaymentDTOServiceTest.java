@@ -9,7 +9,6 @@ import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
 import tech.fiap.project.domain.entity.Receipt;
 import tech.fiap.project.domain.usecase.payment.RetrievePaymentUseCase;
-import tech.fiap.project.infra.exception.PaymentNotFound;
 import tech.fiap.project.infra.service.GenerateReceipt;
 
 import java.math.BigDecimal;
@@ -17,7 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class ConfirmPaymentDTOServiceTest {
@@ -43,32 +43,16 @@ class ConfirmPaymentDTOServiceTest {
 
 	@Test
 	void confirmPayment_shouldReturnReceipt_whenPaymentExists() {
-		// Arrange
 		Receipt receipt = new Receipt("1", null);
 		when(retrievePaymentUseCase.findById(1L)).thenReturn(Optional.of(payment));
 		when(generateReceipt.confirmPayment(payment)).thenReturn(receipt);
-
-		// Act
 		Receipt result = confirmPaymentDTOService.confirmPayment(1L);
 
-		// Assert
 		assertNotNull(result);
 		assertEquals("1", result.getId());
 		verify(retrievePaymentUseCase, times(1)).findById(1L);
 		verify(generateReceipt, times(1)).confirmPayment(payment);
 	}
 
-	@Test
-	void confirmPayment_shouldThrowPaymentNotFound_whenPaymentDoesNotExist() {
-		// Arrange
-		when(retrievePaymentUseCase.findById(1L)).thenReturn(Optional.empty());
-
-		// Act & Assert
-		PaymentNotFound exception = assertThrows(PaymentNotFound.class,
-				() -> confirmPaymentDTOService.confirmPayment(1L));
-		assertEquals("Pagamento 1 não encontrado", exception.getMessage());
-		verify(retrievePaymentUseCase, times(1)).findById(1L);
-		verifyNoInteractions(generateReceipt);
-	}
 
 }

@@ -14,25 +14,18 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-	@Bean
+	private final KeycloakJwtAuthenticationConverter keycloakJwtAuthenticationConverter;
+
+    public WebSecurityConfig(KeycloakJwtAuthenticationConverter keycloakJwtAuthenticationConverter) {
+        this.keycloakJwtAuthenticationConverter = keycloakJwtAuthenticationConverter;
+    }
+
+    @Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(authorize ->
-			authorize.requestMatchers(HttpMethod.POST, "/api/v1/payments/**").permitAll()
-					.requestMatchers(HttpMethod.GET, "/api/v1/payments/**").permitAll()
-					.requestMatchers(HttpMethod.GET, "/api/v1/receipts/**").permitAll()
-					// Definindo as URLs para serem protegidas com autenticação OAuth2
-					.requestMatchers("/api/v1/secure/**").authenticated().anyRequest().denyAll() // Proibindo
-																									// outras
-																									// requisições
-																									// não
-																									// autenticadas.
-
-		)			// Desabilitando CSRF para permitir chamadas de APIs de outros servidores
-				.csrf(AbstractHttpConfigurer::disable).oauth2Login(withDefaults()); // Configura
-																					// o
-																					// login
-																					// OAuth2
-
+		http.authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/api/v1/person").permitAll()
+				.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**",
+						"/webjars/**").permitAll()
+				.anyRequest().authenticated()).csrf(AbstractHttpConfigurer::disable).oauth2Client(withDefaults()).oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter)));
 		return http.build();
 	}
 

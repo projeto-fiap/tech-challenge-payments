@@ -12,6 +12,7 @@ services:
     depends_on:
       - db
       - mongodb
+      - keycloak
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres?currentSchema=public
       SPRING_DATASOURCE_USERNAME: postgres
@@ -42,6 +43,26 @@ services:
       - postgres-net
     volumes:
       - mongodb-data:/data/db
+
+  keycloak:
+    depends_on:
+      - db
+    container_name: local_keycloak
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_DATABASE: keycloack
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      KC_BOOTSTRAP_ADMIN_USERNAME: user
+      KC_BOOTSTRAP_ADMIN_PASSWORD : password
+    image: quay.io/keycloak/keycloak:26.0.7
+    ports:
+      - "29000:8080"
+    restart: unless-stopped
+    command: start-dev
+    networks:
+      - postgres-net
 
 volumes:
   postgres-data:

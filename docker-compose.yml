@@ -24,7 +24,7 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: keycloak
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -50,17 +50,20 @@ services:
     container_name: local_keycloak
     environment:
       DB_VENDOR: postgres
-      DB_ADDR: postgres
-      DB_DATABASE: keycloack
+      DB_ADDR: db
+      DB_DATABASE: keycloak
       DB_USER: postgres
       DB_PASSWORD: postgres
-      KC_BOOTSTRAP_ADMIN_USERNAME: user
-      KC_BOOTSTRAP_ADMIN_PASSWORD : password
+      KC_FEATURES: scripts
+      KEYCLOAK_ADMIN: user
+      KEYCLOAK_ADMIN_PASSWORD: password
+    command: start-dev --import-realm --verbose
+    volumes:
+      - ./keycloak/imports:/opt/keycloak/data/import
     image: quay.io/keycloak/keycloak:26.0.7
     ports:
       - "29000:8080"
     restart: unless-stopped
-    command: start-dev
     networks:
       - postgres-net
 

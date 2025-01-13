@@ -54,5 +54,4 @@ class ConfirmPaymentDTOServiceTest {
 		verify(generateReceipt, times(1)).confirmPayment(payment);
 	}
 
-
 }

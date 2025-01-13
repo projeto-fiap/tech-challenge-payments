@@ -109,7 +109,7 @@ jobs:
           sonar_url: "https://sonarcloud.io"
           sonar_branch: ${{ env.GITHUB_REF_NAME }}
           sonar_token: ${{ secrets.SONAR_TOKEN }}
-          project_key: "projeto-fiap_tech-challenge"
+          project_key: "projeto-fiap_tech-challenge-payments"
   send-docker-hub:
     name: Deploy PRD
     runs-on: ubuntu-latest
@@ -124,9 +124,9 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Clone Repository
-        run: git clone https://github.com/projeto-fiap/tech-challenge.git && cd tech-challenge && docker build . -t matheuspatricio0/projeto-fiap:latest
+        run: git clone https://github.com/projeto-fiap/tech-challenge-payments.git && cd tech-challenge-payments && docker build . -t matheuspatricio0/projeto-fiap-payments:latest
       - name: Push Docker image
-        run: docker push matheuspatricio0/projeto-fiap:latest
+        run: docker push matheuspatricio0/projeto-fiap-payments:latest
   deploy-dev:
       runs-on: ubuntu-latest
       environment:

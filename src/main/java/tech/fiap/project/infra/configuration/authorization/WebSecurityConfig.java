@@ -20,7 +20,8 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated()).oauth2Client(withDefaults()).oauth2ResourceServer(
+		http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated()).oauth2Client(withDefaults())
+				.oauth2ResourceServer(
 						httpSecurityOAuth2ResourceServerConfigurer -> httpSecurityOAuth2ResourceServerConfigurer
 								.jwt(jwtConfigurer -> jwtConfigurer
 										.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter)));

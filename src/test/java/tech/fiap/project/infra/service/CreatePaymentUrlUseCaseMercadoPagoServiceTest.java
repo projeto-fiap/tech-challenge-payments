@@ -2,78 +2,120 @@ package tech.fiap.project.infra.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import tech.fiap.project.app.dto.ItemMercadoLivreDTO;
+import tech.fiap.project.app.dto.PaymentResponseDTO;
 import tech.fiap.project.domain.entity.Item;
 import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.usecase.impl.order.CalculateTotalOrderUseCaseImpl;
+import tech.fiap.project.infra.configuration.MercadoPagoConstants;
 import tech.fiap.project.infra.configuration.MercadoPagoProperties;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class CreatePaymentUrlUseCaseMercadoPagoServiceTest {
 
 	@Mock
-	private RestTemplate restTemplateMercadoPago;
+	private RestTemplate restTemplate;
 
 	@Mock
 	private MercadoPagoProperties mercadoPagoProperties;
 
 	@Mock
-	private CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCaseImpl;
+	private CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase;
 
-	private CreatePaymentUrlUseCaseMercadoPagoService createPaymentUrlUseCaseMercadoPagoService;
+	@InjectMocks
+	private CreatePaymentUrlUseCaseMercadoPagoService service;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		createPaymentUrlUseCaseMercadoPagoService = new CreatePaymentUrlUseCaseMercadoPagoService(
-				restTemplateMercadoPago, mercadoPagoProperties, calculateTotalOrderUseCaseImpl);
+		when(mercadoPagoProperties.getAccessToken()).thenReturn("mockAccessToken");
+		when(mercadoPagoProperties.getUserId()).thenReturn("mockUserId");
+		when(mercadoPagoProperties.getPos()).thenReturn("mockPos");
 	}
 
 	@Test
-	void testBuildItems_shouldReturnCorrectItemsList() {
-		Item item1 = new Item(1L, "Item1", BigDecimal.valueOf(50.0), BigDecimal.valueOf(2), "unit", null,
-				"Item description", "imageUrl1");
-		Item item2 = new Item(2L, "Item2", BigDecimal.valueOf(30.0), BigDecimal.valueOf(1), "unit", null,
-				"Another item", "imageUrl2");
-		Order order = new Order(1L, LocalDateTime.now(), LocalDateTime.now(), Arrays.asList(item1, item2), null, null,
-				BigDecimal.valueOf(150.0));
+	void testExecuteSuccess() {
+		Order order = new Order();
+		order.setId(1L);
+		Item item = new Item(1L, "Item 1", BigDecimal.TEN, BigDecimal.ONE, "unit", null, "description", null);
+		order.setItems(Collections.singletonList(item));
+		when(calculateTotalOrderUseCase.execute(order.getItems())).thenReturn(BigDecimal.TEN);
 
-		List<ItemMercadoLivreDTO> items = createPaymentUrlUseCaseMercadoPagoService.buildItems(order.getItems());
+		PaymentResponseDTO paymentResponseDTO = new PaymentResponseDTO();
+		paymentResponseDTO.setQrData("mockQrData");
 
-		assertNotNull(items);
-		assertEquals(2, items.size());
-		ItemMercadoLivreDTO firstItem = items.get(0);
-		assertEquals("marketplace", firstItem.getCategory());
-		assertEquals("Item description", firstItem.getDescription());
-		assertEquals(BigDecimal.valueOf(50.0), firstItem.getUnitPrice());
-		assertEquals(2, firstItem.getQuantity());
-		assertEquals("unit", firstItem.getUnitMeasure());
-		assertEquals(BigDecimal.valueOf(100.0), firstItem.getTotalAmount());
+		ResponseEntity<PaymentResponseDTO> responseEntity = ResponseEntity.ok(paymentResponseDTO);
+		when(restTemplate.exchange(any(RequestEntity.class), eq(PaymentResponseDTO.class))).thenReturn(responseEntity);
+
+		String result = service.execute(order);
+
+		assertEquals("mockQrData", result);
+		verify(restTemplate, times(1)).exchange(any(RequestEntity.class), eq(PaymentResponseDTO.class));
 	}
 
 	@Test
-	void testBuildItems_shouldReturnEmptyList_whenItemsAreNull() {
-		List<ItemMercadoLivreDTO> items = createPaymentUrlUseCaseMercadoPagoService.buildItems(null);
-		assertNotNull(items);
-		assertTrue(items.isEmpty());
-	}
+	void testBuildDescription() {
+		// Act
+		String description = service.buildDescription(123L);
 
-	@Test
-	void testBuildDescription_shouldReturnCorrectDescription() {
-		Long orderId = 123L;
-
-		String description = createPaymentUrlUseCaseMercadoPagoService.buildDescription(orderId);
-
+		// Assert
 		assertEquals("Pagamento do pedido 123", description);
 	}
 
+	@Test
+	void testBuildItems() {
+		Item item1 = new Item(1L, "Item 1", BigDecimal.TEN, BigDecimal.ONE, "unit", null, "description 1", null);
+		Item item2 = new Item(2L, "Item 2", BigDecimal.valueOf(20), BigDecimal.valueOf(2), "unit", null, "description 2", null);
+
+		List<Item> items = Arrays.asList(item1, item2);
+
+		List<ItemMercadoLivreDTO> itemMercadoLivreDTOS = service.buildItems(items);
+
+		assertEquals(2, itemMercadoLivreDTOS.size());
+		assertEquals("Item 1", itemMercadoLivreDTOS.get(0).getTitle());
+		assertEquals(BigDecimal.valueOf(40), itemMercadoLivreDTOS.get(1).getTotalAmount());
+	}
+
+	@Test
+	void testBuildItemsWithNull() {
+		// Act
+		List<ItemMercadoLivreDTO> itemMercadoLivreDTOS = service.buildItems(null);
+
+		// Assert
+		assertNotNull(itemMercadoLivreDTOS);
+		assertTrue(itemMercadoLivreDTOS.isEmpty());
+	}
+
+	@Test
+	void testGetHttpHeaders() {
+		// Act
+		HttpHeaders headers = service.getHttpHeaders();
+
+		// Assert
+		assertNotNull(headers);
+		assertEquals("Bearer  mockAccessToken", headers.getFirst("Authorization"));
+	}
+
+	@Test
+	void testBuildBaseUrl() {
+		// Act
+		String baseUrl = service.buildBaseUrl();
+
+		// Assert
+		assertEquals(String.format(MercadoPagoConstants.BASE_PAYMENT_METHOD, "mockUserId", "mockPos"), baseUrl);
+	}
 }

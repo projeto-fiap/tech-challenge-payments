@@ -21,11 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-@Import({WebSecurityConfig.class})
+@Import({ WebSecurityConfig.class })
 @EnableWebSecurity
 class WebSecurityConfigTest {
 
-	private final KeycloakJwtAuthenticationConverter keycloakJwtAuthenticationConverter = new KeycloakJwtAuthenticationConverter(new ObjectMapper());
+	private final KeycloakJwtAuthenticationConverter keycloakJwtAuthenticationConverter = new KeycloakJwtAuthenticationConverter(
+			new ObjectMapper());
 
 	ObjectPostProcessor<Object> objectPostProcessor = new ObjectPostProcessor<Object>() {
 		@Override
@@ -33,10 +34,14 @@ class WebSecurityConfigTest {
 			return object;
 		}
 	};
-	private HttpSecurity httpSecurity;	{
-		HashMap<Class<?>,Object> sharedObjects = new HashMap<>();
+
+	private HttpSecurity httpSecurity;
+
+	{
+		HashMap<Class<?>, Object> sharedObjects = new HashMap<>();
 		GenericApplicationContext value = new GenericApplicationContext();
-		value.getBeanFactory().registerSingleton("jwtDecoder", NimbusJwtDecoder.withJwkSetUri("https://your-auth-server/.well-known/jwks.json").build());
+		value.getBeanFactory().registerSingleton("jwtDecoder",
+				NimbusJwtDecoder.withJwkSetUri("https://your-auth-server/.well-known/jwks.json").build());
 		value.getBeanFactory().registerSingleton("clientRegistrationRepository'", new ClientRegistrationRepository() {
 			@Override
 			public ClientRegistration findByRegistrationId(String registrationId) {
@@ -45,7 +50,8 @@ class WebSecurityConfigTest {
 		});
 		value.refresh();
 		sharedObjects.put(ApplicationContext.class, value);
-		httpSecurity = Mockito.spy(new HttpSecurity(objectPostProcessor, new AuthenticationManagerBuilder(objectPostProcessor), sharedObjects));
+		httpSecurity = Mockito.spy(new HttpSecurity(objectPostProcessor,
+				new AuthenticationManagerBuilder(objectPostProcessor), sharedObjects));
 	}
 
 	private WebSecurityConfig webSecurityConfig = new WebSecurityConfig(keycloakJwtAuthenticationConverter);

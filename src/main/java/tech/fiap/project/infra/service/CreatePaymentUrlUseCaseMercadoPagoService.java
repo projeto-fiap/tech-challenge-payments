@@ -63,14 +63,14 @@ public class CreatePaymentUrlUseCaseMercadoPagoService implements CreatePaymentU
 		return itemMercadoLivreDTOS;
 	}
 
-	private HttpHeaders getHttpHeaders() {
+	protected HttpHeaders getHttpHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		String token = mercadoPagoProperties.getAccessToken();
 		headers.add("Authorization", "Bearer  " + token);
 		return headers;
 	}
 
-	private String buildBaseUrl() {
+	protected String buildBaseUrl() {
 		String userId = mercadoPagoProperties.getUserId();
 		String pos = mercadoPagoProperties.getPos();
 		return String.format(MercadoPagoConstants.BASE_PAYMENT_METHOD, userId, pos);

@@ -17,6 +17,7 @@ import tech.fiap.project.domain.usecase.impl.order.CalculateTotalOrderUseCaseImp
 import tech.fiap.project.infra.configuration.MercadoPagoConstants;
 import tech.fiap.project.infra.configuration.MercadoPagoProperties;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,12 +37,16 @@ public class CreatePaymentUrlUseCaseMercadoPagoService implements CreatePaymentU
 		String url = MercadoPagoConstants.BASE_URI + buildBaseUrl();
 		HttpHeaders headers = getHttpHeaders();
 		Long id = order.getId();
+		List<ItemMercadoLivreDTO> items = buildItems(order.getItems());
 		PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(new CashOutDTO(0), buildDescription(id),
-				String.format("urn:order:id:%s", id), buildItems(order.getItems()), null, buildDescription(id),
-				calculateTotalOrderUseCaseImpl.execute(order.getItems()));
+				String.format("urn:order:id:%s", id), items, null, buildDescription(id), sumTotalAmounts(items));
 		RequestEntity<PaymentRequestDTO> body = RequestEntity.post(url).headers(headers).body(paymentRequestDTO);
 		ResponseEntity<PaymentResponseDTO> exchange = restTemplateMercadoPago.exchange(body, PaymentResponseDTO.class);
 		return Objects.requireNonNull(exchange.getBody()).getQrData();
+	}
+
+	public static BigDecimal sumTotalAmounts(List<ItemMercadoLivreDTO> items) {
+		return items.stream().map(ItemMercadoLivreDTO::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	protected String buildDescription(Long orderId) {

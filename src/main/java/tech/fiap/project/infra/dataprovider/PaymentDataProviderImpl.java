@@ -1,9 +1,13 @@
 package tech.fiap.project.infra.dataprovider;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.fiap.project.domain.dataprovider.PaymentDataProvider;
 import tech.fiap.project.domain.entity.Payment;
+import tech.fiap.project.infra.entity.OrderEntity;
+import tech.fiap.project.infra.entity.PaymentEntity;
 import tech.fiap.project.infra.mapper.PaymentRepositoryMapper;
 import tech.fiap.project.infra.repository.PaymentRepository;
 
@@ -15,6 +19,8 @@ import java.util.Optional;
 public class PaymentDataProviderImpl implements PaymentDataProvider {
 
 	private PaymentRepository paymentRepository;
+
+	private EntityManager entityManager;
 
 	@Override
 	public List<Payment> retrieveAll() {
@@ -28,9 +34,21 @@ public class PaymentDataProviderImpl implements PaymentDataProvider {
 
 	@Override
 	public Payment create(Payment payment) {
-		payment.setOrder(null);
-		return PaymentRepositoryMapper
-				.toDomainWithOrder(paymentRepository.save(PaymentRepositoryMapper.toEntity(payment)));
+		PaymentEntity paymentEntity = PaymentRepositoryMapper.toEntity(payment);
+
+		if (paymentEntity.getOrder() != null && paymentEntity.getOrder().getId() != null) {
+			OrderEntity existingOrder = entityManager.find(OrderEntity.class, paymentEntity.getOrder().getId());
+			if (existingOrder != null) {
+				paymentEntity.setOrder(existingOrder);
+			}
+			else {
+				throw new EntityNotFoundException("Order not found for id " + paymentEntity.getOrder().getId());
+			}
+		}
+
+		PaymentEntity savedPayment = paymentRepository.save(paymentEntity);
+
+		return PaymentRepositoryMapper.toDomainWithOrder(savedPayment);
 	}
 
 }

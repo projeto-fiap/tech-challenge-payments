@@ -52,6 +52,15 @@ mercado-pago:
   access-token: TEST-6546844616028207-063020-f09a0b6563261874ab236fd560e23d9b-769812162
   user-id: 769812162
   pos: SUC001POS002
+
+tech-challenge:
+  payments:
+    client-id: tech-challenge-payments
+    client-secret: vN1pPMFB2OQ6xZhHzxwimFZedY29lEqr
+  orders:
+    base-url: http://localhost:8082
+
+
 springdoc:
   api-docs:
     path: /v3/api-docs

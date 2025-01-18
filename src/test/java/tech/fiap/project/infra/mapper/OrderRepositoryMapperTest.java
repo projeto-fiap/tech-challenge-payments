@@ -14,16 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class OrderRepositoryMapperTest {
 
 	@Test
-	void toEntity_shouldReturnNullWhenOrderIsNull() {
-		OrderEntity orderEntity = OrderRepositoryMapper.toEntity(null);
+	void toEntity_Payment_shouldReturnNullWhenOrderIsNull() {
+		OrderEntity orderEntity = OrderRepositoryMapper.toEntityPayment(null);
 		assertNull(orderEntity);
 	}
 
 	@Test
-	void toEntity_shouldMapOrderToOrderEntity() {
+	void toEntity_shouldMapOrderToOrderEntityPayment() {
 		Order order = new Order(1L, LocalDateTime.now(), LocalDateTime.now(), List.of(), List.of(), Duration.ofDays(1),
 				BigDecimal.valueOf(100.0));
-		OrderEntity orderEntity = OrderRepositoryMapper.toEntity(order);
+		OrderEntity orderEntity = OrderRepositoryMapper.toEntityPayment(order);
 
 		assertNotNull(orderEntity);
 		assertEquals(order.getId(), orderEntity.getId());
@@ -34,13 +34,13 @@ class OrderRepositoryMapperTest {
 	}
 
 	@Test
-	void toDomain_shouldReturnNullWhenOrderEntityIsNull() {
-		Order order = OrderRepositoryMapper.toDomain(null);
+	void toDomain_WithPayment_shouldReturnNullWhenOrderEntityIsNull() {
+		Order order = OrderRepositoryMapper.toDomainWithPayment(null);
 		assertNull(order);
 	}
 
 	@Test
-	void toDomain_shouldMapOrderEntityToOrder() {
+	void toDomain_shouldMapOrderEntityToOrderWithPayment() {
 		OrderEntity orderEntity = new OrderEntity();
 		orderEntity.setId(1L);
 		orderEntity.setCreatedDate(LocalDateTime.now());
@@ -48,7 +48,7 @@ class OrderRepositoryMapperTest {
 		orderEntity.setAwaitingTime(Duration.ofDays(1));
 		orderEntity.setTotalPrice(BigDecimal.valueOf(100.0));
 
-		Order order = OrderRepositoryMapper.toDomain(orderEntity);
+		Order order = OrderRepositoryMapper.toDomainWithPayment(orderEntity);
 
 		assertNotNull(order);
 		assertEquals(orderEntity.getId(), order.getId());

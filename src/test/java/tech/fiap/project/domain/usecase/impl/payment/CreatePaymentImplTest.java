@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import tech.fiap.project.app.dto.StatePayment;
+import tech.fiap.project.domain.dataprovider.OrderDataProvider;
 import tech.fiap.project.domain.dataprovider.PaymentDataProvider;
 import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
@@ -32,6 +33,9 @@ class CreatePaymentImplTest {
 	@Mock
 	private CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase;
 
+	@Mock
+	private OrderDataProvider orderDataProvider;
+
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -39,6 +43,7 @@ class CreatePaymentImplTest {
 
 	@Test
 	void execute_shouldCreatePaymentSuccessfully() {
+		when(orderDataProvider.create(any(Order.class))).thenReturn(new Order());
 		Order mockOrder = new Order();
 		Item item1 = new Item();
 		Item item2 = new Item();
@@ -65,6 +70,8 @@ class CreatePaymentImplTest {
 
 	@Test
 	void execute_shouldHandleEmptyOrderItems() {
+		when(orderDataProvider.create(any(Order.class))).thenReturn(new Order());
+
 		Order mockOrder = new Order();
 		mockOrder.setItems(List.of());
 		BigDecimal totalOrderValue = BigDecimal.ZERO;
@@ -83,6 +90,8 @@ class CreatePaymentImplTest {
 
 	@Test
 	void execute_shouldThrowException_whenPaymentDataProviderFails() {
+		when(orderDataProvider.create(any(Order.class))).thenReturn(new Order());
+
 		Order mockOrder = new Order();
 		Item item = new Item();
 		mockOrder.setItems(List.of(item));

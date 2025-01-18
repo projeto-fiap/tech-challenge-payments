@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
 import tech.fiap.project.domain.entity.Receipt;
+import tech.fiap.project.domain.usecase.order.UpdateOrderUseCase;
 import tech.fiap.project.domain.usecase.payment.RetrievePaymentUseCase;
 import tech.fiap.project.infra.service.GenerateReceipt;
 
@@ -31,6 +32,9 @@ class ConfirmPaymentDTOServiceTest {
 	@Mock
 	private RetrievePaymentUseCase retrievePaymentUseCase;
 
+	@Mock
+	private UpdateOrderUseCase updateOrderUseCase;
+
 	private Payment payment;
 
 	@BeforeEach
@@ -46,6 +50,7 @@ class ConfirmPaymentDTOServiceTest {
 		Receipt receipt = new Receipt("1", null);
 		when(retrievePaymentUseCase.findById(1L)).thenReturn(Optional.of(payment));
 		when(generateReceipt.confirmPayment(payment)).thenReturn(receipt);
+		when(updateOrderUseCase.updateOrder(anyLong())).thenReturn(Optional.of(new Order()));
 		Receipt result = confirmPaymentDTOService.confirmPayment(1L);
 
 		assertNotNull(result);

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.fiap.project.domain.entity.Payment;
 import tech.fiap.project.domain.entity.Receipt;
+import tech.fiap.project.domain.usecase.order.UpdateOrderUseCase;
 import tech.fiap.project.domain.usecase.payment.RetrievePaymentUseCase;
 import tech.fiap.project.infra.exception.PaymentNotFound;
 import tech.fiap.project.infra.service.GenerateReceipt;
@@ -18,11 +19,14 @@ public class ConfirmPaymentDTOService {
 
 	private final RetrievePaymentUseCase retrievePaymentUseCase;
 
+	private final UpdateOrderUseCase updateOrderUseCase;
+
 	public Receipt confirmPayment(Long paymentId) {
 		Optional<Payment> payment = retrievePaymentUseCase.findById(paymentId);
 		if (payment.isEmpty()) {
 			throw new PaymentNotFound(paymentId.toString());
 		}
+		updateOrderUseCase.updateOrder(payment.get().getOrder().getId());
 		return generateReceipt.confirmPayment(payment.get());
 	}
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
@@ -11,6 +12,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
+import tech.fiap.project.domain.dataprovider.OrderDataProvider;
 import tech.fiap.project.domain.dataprovider.PaymentDataProvider;
 import tech.fiap.project.domain.dataprovider.ReceiptDataProvider;
 import tech.fiap.project.domain.usecase.CreatePaymentUrlUseCase;
@@ -18,6 +20,7 @@ import tech.fiap.project.domain.usecase.CreateQrCodeUseCase;
 import tech.fiap.project.domain.usecase.impl.CreateQrCodeUseCaseImpl;
 import tech.fiap.project.domain.usecase.impl.GenerateQrCodeUseCaseImpl;
 import tech.fiap.project.domain.usecase.impl.order.CalculateTotalOrderUseCaseImpl;
+import tech.fiap.project.domain.usecase.impl.order.UpdateOrderUseCaseImpl;
 import tech.fiap.project.domain.usecase.impl.payment.CreatePaymentImpl;
 import tech.fiap.project.domain.usecase.impl.payment.CreatePaymentUseCaseImpl;
 import tech.fiap.project.domain.usecase.impl.payment.RetrievePaymentUseCaseImpl;
@@ -35,6 +38,18 @@ import java.text.SimpleDateFormat;
 @ComponentScan("tech.fiap.project")
 @Setter
 public class Configuration {
+
+	@Value("${tech-challenge.orders.base-url}")
+	String ordersBaseUrl;
+
+	@Value("${keycloak.base-url}")
+	String keycloakBaseUrl;
+
+	@Value("${tech-challenge.payments.client-id}")
+	String paymentsClientId;
+
+	@Value("${tech-challenge.payments.client-secret}")
+	String paymentsClientSecret;
 
 	@Bean
 	public ObjectMapper objectMapper() {
@@ -76,14 +91,15 @@ public class Configuration {
 	}
 
 	@Bean
-	public RetrievePaymentUseCase retrievePaymentUseCase(PaymentDataProvider paymentDataProvider) {
-		return new RetrievePaymentUseCaseImpl(paymentDataProvider);
+	public RetrievePaymentUseCase retrievePaymentUseCase(OrderDataProvider orderDataProvider,
+			PaymentDataProvider paymentDataProvider) {
+		return new RetrievePaymentUseCaseImpl(paymentDataProvider, orderDataProvider);
 	}
 
 	@Bean
-	public CreatePaymentImpl createPayment(PaymentDataProvider createPayment,
+	public CreatePaymentImpl createPayment(OrderDataProvider orderDataProvider, PaymentDataProvider createPayment,
 			CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase) {
-		return new CreatePaymentImpl(createPayment, calculateTotalOrderUseCase);
+		return new CreatePaymentImpl(orderDataProvider, createPayment, calculateTotalOrderUseCase);
 	}
 
 	@Bean
@@ -95,6 +111,13 @@ public class Configuration {
 	@Bean
 	public RetrieveReceiptUseCase retrieveReceiptUseCase(ReceiptDataProvider receiptDataProvider) {
 		return new RetrieveReceiptUseCaseImpl(receiptDataProvider);
+	}
+
+	@Bean
+	public UpdateOrderUseCaseImpl updateOrderUseCase(RestTemplate restTemplateOrder,
+			RestTemplate restTemplateKeycloak) {
+		return new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak, keycloakBaseUrl, paymentsClientId,
+				paymentsClientSecret);
 	}
 
 }

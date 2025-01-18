@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import tech.fiap.project.app.dto.StatePayment;
+import tech.fiap.project.domain.dataprovider.OrderDataProvider;
 import tech.fiap.project.domain.dataprovider.PaymentDataProvider;
 import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
@@ -25,6 +26,9 @@ class RetrievePaymentUseCaseImplTest {
 
 	@Mock
 	private PaymentDataProvider paymentDataProvider;
+
+	@Mock
+	private OrderDataProvider orderDataProvider;
 
 	@InjectMocks
 	private RetrievePaymentUseCaseImpl retrievePaymentUseCaseImpl;
@@ -56,6 +60,7 @@ class RetrievePaymentUseCaseImplTest {
 		Payment payment = new Payment(3L, LocalDateTime.now(), "Credit Card", BigDecimal.TEN,
 				Currency.getInstance("USD"), order, StatePayment.ACCEPTED);
 		when(paymentDataProvider.retrieveById(1L)).thenReturn(Optional.of(payment));
+		when(orderDataProvider.retrieveByPaymentId(1L)).thenReturn(new Order());
 
 		Optional<Payment> result = retrievePaymentUseCaseImpl.findById(1L);
 

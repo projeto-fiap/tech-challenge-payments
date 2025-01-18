@@ -79,7 +79,8 @@ class CreatePaymentUrlUseCaseMercadoPagoServiceTest {
 	@Test
 	void testBuildItems() {
 		Item item1 = new Item(1L, "Item 1", BigDecimal.TEN, BigDecimal.ONE, "unit", null, "description 1", null);
-		Item item2 = new Item(2L, "Item 2", BigDecimal.valueOf(20), BigDecimal.valueOf(2), "unit", null, "description 2", null);
+		Item item2 = new Item(2L, "Item 2", BigDecimal.valueOf(20), BigDecimal.valueOf(2), "unit", null,
+				"description 2", null);
 
 		List<Item> items = Arrays.asList(item1, item2);
 
@@ -118,4 +119,5 @@ class CreatePaymentUrlUseCaseMercadoPagoServiceTest {
 		// Assert
 		assertEquals(String.format(MercadoPagoConstants.BASE_PAYMENT_METHOD, "mockUserId", "mockPos"), baseUrl);
 	}
+
 }

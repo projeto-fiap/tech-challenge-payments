@@ -1,6 +1,8 @@
 package tech.fiap.project.domain.usecase.impl.payment;
 
+import tech.fiap.project.domain.dataprovider.OrderDataProvider;
 import tech.fiap.project.domain.dataprovider.PaymentDataProvider;
+import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
 import tech.fiap.project.domain.usecase.payment.RetrievePaymentUseCase;
 
@@ -11,8 +13,11 @@ public class RetrievePaymentUseCaseImpl implements RetrievePaymentUseCase {
 
 	private final PaymentDataProvider paymentDataProvider;
 
-	public RetrievePaymentUseCaseImpl(PaymentDataProvider paymentDataProvider) {
+	private final OrderDataProvider orderDataProvider;
+
+	public RetrievePaymentUseCaseImpl(PaymentDataProvider paymentDataProvider, OrderDataProvider orderDataProvider) {
 		this.paymentDataProvider = paymentDataProvider;
+		this.orderDataProvider = orderDataProvider;
 	}
 
 	@Override
@@ -22,7 +27,10 @@ public class RetrievePaymentUseCaseImpl implements RetrievePaymentUseCase {
 
 	@Override
 	public Optional<Payment> findById(Long id) {
-		return paymentDataProvider.retrieveById(id);
+		Order order = orderDataProvider.retrieveByPaymentId(id);
+		Optional<Payment> payment = paymentDataProvider.retrieveById(id);
+		payment.ifPresent(value -> value.setOrder(order));
+		return payment;
 	}
 
 }

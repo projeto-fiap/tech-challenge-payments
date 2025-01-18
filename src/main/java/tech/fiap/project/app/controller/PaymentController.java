@@ -56,7 +56,6 @@ public class PaymentController {
 			headers.add("receiptId", receipt.getId());
 			Files.delete(Path.of(pdfFile.getPath()));
 			return ResponseEntity.ok().headers(headers).body(pdfBytes);
-			// TODO PIX CPF 87520532100
 		}
 		else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

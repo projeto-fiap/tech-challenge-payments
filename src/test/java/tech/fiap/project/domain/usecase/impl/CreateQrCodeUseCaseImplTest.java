@@ -17,7 +17,9 @@ import static org.mockito.Mockito.when;
 class CreateQrCodeUseCaseImplTest {
 
 	private CreatePaymentUrlUseCase createPaymentUrlUseCase;
+
 	private GenerateQrCodeUseCaseImpl generateQrCodeUseCaseImpl;
+
 	private CreateQrCodeUseCaseImpl createQrCodeUseCase;
 
 	@BeforeEach
@@ -62,4 +64,5 @@ class CreateQrCodeUseCaseImplTest {
 		assertNull(result, "O resultado não deve ser nulo, mesmo com URL de pagamento nula");
 		Mockito.verify(createPaymentUrlUseCase).execute(mockOrder);
 	}
+
 }

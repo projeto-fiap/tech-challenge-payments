@@ -1,5 +1,6 @@
 package tech.fiap.project.infra.dataprovider;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -21,14 +22,14 @@ class PaymentDataProviderImplTest {
 	private PaymentRepository paymentRepository;
 
 	@Mock
-	private PaymentRepositoryMapper paymentRepositoryMapper;
+	private EntityManager entityManager;
 
 	private PaymentDataProviderImpl paymentDataProvider;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		paymentDataProvider = new PaymentDataProviderImpl(paymentRepository);
+		paymentDataProvider = new PaymentDataProviderImpl(paymentRepository, entityManager);
 	}
 
 	@Test

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import tech.fiap.project.domain.dataprovider.OrderDataProvider;
 import tech.fiap.project.domain.dataprovider.PaymentDataProvider;
 import tech.fiap.project.domain.usecase.CreatePaymentUrlUseCase;
 import tech.fiap.project.domain.usecase.impl.CreateQrCodeUseCaseImpl;
@@ -71,7 +72,9 @@ class ConfigurationTest {
 	@Test
 	void retrievePaymentUseCase_shouldReturnRetrievePaymentUseCaseImpl() {
 		PaymentDataProvider paymentDataProvider = mock(PaymentDataProvider.class);
-		RetrievePaymentUseCase retrievePaymentUseCase = configuration.retrievePaymentUseCase(paymentDataProvider);
+		OrderDataProvider orderDataProvider = mock(OrderDataProvider.class);
+		RetrievePaymentUseCase retrievePaymentUseCase = configuration.retrievePaymentUseCase(orderDataProvider,
+				paymentDataProvider);
 		assertNotNull(retrievePaymentUseCase);
 		assert (retrievePaymentUseCase instanceof RetrievePaymentUseCaseImpl);
 	}

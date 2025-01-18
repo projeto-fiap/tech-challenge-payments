@@ -84,7 +84,6 @@ class PaymentRepositoryMapperTest {
 	void toDomainWithOrder_shouldMapPaymentEntityToPaymentWithOrder() {
 		OrderEntity orderEntity = new OrderEntity();
 		orderEntity.setId(1L);
-		orderEntity.setStatus("PENDING");
 
 		PaymentEntity paymentEntity = new PaymentEntity();
 		paymentEntity.setAmount(BigDecimal.valueOf(100.0));

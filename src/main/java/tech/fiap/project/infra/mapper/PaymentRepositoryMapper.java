@@ -24,7 +24,7 @@ public class PaymentRepositoryMapper {
 			paymentEntity.setPaymentMethod(payment.getPaymentMethod());
 			paymentEntity.setState(payment.getState());
 			if (payment.getOrder() != null) {
-				paymentEntity.setOrder(OrderRepositoryMapper.toEntity(payment.getOrder()));
+				paymentEntity.setOrder(OrderRepositoryMapper.toEntityPayment(payment.getOrder()));
 			}
 			return paymentEntity;
 		}
@@ -64,8 +64,7 @@ public class PaymentRepositoryMapper {
 			OrderEntity order = paymentEntity.getOrder();
 			Order domain = null;
 			if (order != null) {
-				order.setPayments(null);
-				domain = OrderRepositoryMapper.toDomain(order);
+				domain = OrderRepositoryMapper.toDomainWithoutPayment(order);
 			}
 			return new Payment(paymentEntity.getId(), paymentEntity.getPaymentDate(), paymentEntity.getPaymentMethod(),
 					paymentEntity.getAmount(), paymentEntity.getCurrency(), domain, paymentEntity.getState());

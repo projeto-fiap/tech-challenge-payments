@@ -2,6 +2,8 @@ package tech.fiap.project.infra.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,7 @@ import tech.fiap.project.domain.usecase.payment.CreatePayment;
 import tech.fiap.project.domain.usecase.payment.RetrievePaymentUseCase;
 import tech.fiap.project.domain.usecase.receipt.RetrieveReceiptUseCase;
 
+import javax.net.ssl.SSLContext;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +53,9 @@ public class Configuration {
 
 	@Value("${tech-challenge.payments.client-secret}")
 	String paymentsClientSecret;
+
+	@Value("${mongodb.uri}")
+	String mongoUri;
 
 	@Bean
 	public ObjectMapper objectMapper() {
@@ -118,6 +124,19 @@ public class Configuration {
 			RestTemplate restTemplateKeycloak) {
 		return new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak, keycloakBaseUrl, paymentsClientId,
 				paymentsClientSecret);
+	}
+
+	@Bean
+	public MongoClientSettings mongoClientSettings() throws Exception {
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, null, null);
+
+		ConnectionString connectionString = new ConnectionString(mongoUri);
+
+		return MongoClientSettings.builder()
+				.applyConnectionString(connectionString)
+				.applyToSslSettings(builder -> builder.enabled(true).context(sslContext))
+				.build();
 	}
 
 }

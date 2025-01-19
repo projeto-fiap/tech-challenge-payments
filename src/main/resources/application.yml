@@ -1,3 +1,5 @@
+mongodb:
+  uri: ${MONGO_URL:mongodb://adminuser:admin12345@documentdb-cluster.cluster-caetpmx4dios.us-east-1.docdb.amazonaws.com:27017/meuBanco?ssl=true}
 spring:
   devtools:
     restart:
@@ -5,7 +7,7 @@ spring:
   application:
     name: project
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=public
+    url: ${POSTGRES_URL:jdbc:postgresql://projetofiappayments.caetpmx4dios.us-east-1.rds.amazonaws.com/postgres?currentSchema=public}
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver

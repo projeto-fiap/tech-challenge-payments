@@ -1,5 +1,5 @@
-mongodb:
-  uri: ${MONGO_URL:mongodb://adminuser:admin12345@documentdb-cluster.cluster-caetpmx4dios.us-east-1.docdb.amazonaws.com:27017/meuBanco?ssl=true}
+#mongodb:
+#  uri: ${MONGO_URL:mongodb://adminuser:admin12345@documentdb-cluster.cluster-caetpmx4dios.us-east-1.docdb.amazonaws.com:27017/meuBanco?ssl=true}
 spring:
   devtools:
     restart:
@@ -7,7 +7,7 @@ spring:
   application:
     name: project
   datasource:
-    url: ${POSTGRES_URL:jdbc:postgresql://projetofiappayments.caetpmx4dios.us-east-1.rds.amazonaws.com/postgres?currentSchema=public}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres?currentSchema=payments}
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -58,7 +58,7 @@ mercado-pago:
 tech-challenge:
   payments:
     client-id: tech-challenge-payments
-    client-secret: vN1pPMFB2OQ6xZhHzxwimFZedY29lEqr
+    client-secret: "**********"
   orders:
     base-url: http://localhost:8082
 

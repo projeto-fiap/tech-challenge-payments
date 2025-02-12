@@ -24,6 +24,7 @@ class UpdateOrderUseCaseImplTest {
 	private String keycloakBaseUrl = "http://localhost:8080";
 
 	private String clientId = "testClientId";
+	private String orderBaseUrl = "http://localhost:8082";
 
 	private String clientSecret = "testClientSecret";
 
@@ -31,7 +32,7 @@ class UpdateOrderUseCaseImplTest {
 	void setUp() {
 		restTemplateOrder = mock(RestTemplate.class);
 		restTemplateKeycloak = mock(RestTemplate.class);
-		updateOrderUseCaseImpl = new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak, keycloakBaseUrl,
+		updateOrderUseCaseImpl = new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak,orderBaseUrl, keycloakBaseUrl,
 				clientId, clientSecret);
 	}
 

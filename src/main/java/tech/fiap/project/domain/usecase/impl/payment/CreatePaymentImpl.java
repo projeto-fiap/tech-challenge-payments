@@ -37,8 +37,9 @@ public class CreatePaymentImpl implements CreatePayment {
 		payments.add(payment);
 		order.setPayments(payments);
 		Order orderSaved = orderDataProvider.create(order);
-		payment.setOrder(orderSaved);
-		return paymentDataProvider.create(payment);
+		Payment paymentSaved = orderSaved.getPayments().get(0);
+		paymentSaved.setOrder(orderSaved);
+		return paymentDataProvider.create(paymentSaved);
 	}
 
 }

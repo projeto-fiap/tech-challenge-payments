@@ -46,9 +46,7 @@ public class PaymentDataProviderImpl implements PaymentDataProvider {
 			}
 		}
 
-		PaymentEntity savedPayment = paymentRepository.save(paymentEntity);
-
-		return PaymentRepositoryMapper.toDomainWithOrder(savedPayment);
+		return PaymentRepositoryMapper.toDomainWithOrder(paymentEntity);
 	}
 
 }

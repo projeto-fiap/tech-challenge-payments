@@ -17,17 +17,20 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
 
 	private final RestTemplate restTemplateKeycloak;
 
+	private final String orderBaseUrl;
+
 	private final String clientId;
 
 	private final String keycloakBaseUrl;
 
 	private final String clientSecret;
 
-	public UpdateOrderUseCaseImpl(RestTemplate restTemplateOrder, RestTemplate restTemplateKeycloak,
-			String keycloakBaseUrl, String clientId, String clientSecret) {
+	public UpdateOrderUseCaseImpl(RestTemplate restTemplateOrder, RestTemplate restTemplateKeycloak, String orderBaseUrl,
+                                  String keycloakBaseUrl, String clientId, String clientSecret) {
 		this.restTemplateOrder = restTemplateOrder;
 		this.restTemplateKeycloak = restTemplateKeycloak;
-		this.clientId = clientId;
+        this.orderBaseUrl = orderBaseUrl;
+        this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		this.keycloakBaseUrl = keycloakBaseUrl;
 	}
@@ -40,14 +43,8 @@ public class UpdateOrderUseCaseImpl implements UpdateOrderUseCase {
 		HttpEntity<Order> requestEntity = new HttpEntity<>(null, headers);
 		log.info("accessToken {}", accessToken);
 		log.info("orderId {}", orderId);
-		// TODO Matheus e Leo descomentar aqui para testar a comunicação com o seu projeto
-		// ResponseEntity<Order> response =
-		// restTemplateOrder.exchange("http://localhost:8082/api/v1/order/" + orderId +
-		// "/payment",
-		// HttpMethod.PUT, requestEntity, Order.class);
-		// return response.getStatusCode().is2xxSuccessful() ?
-		// Optional.ofNullable(response.getBody()) : Optional.empty();
-		return Optional.empty();
+	 	ResponseEntity<Order> response = restTemplateOrder.exchange(orderBaseUrl + "/api/v1/orders/checkout/" + orderId, HttpMethod.PUT, requestEntity, Order.class);
+		return response.getStatusCode().is2xxSuccessful() ? Optional.ofNullable(response.getBody()) : Optional.empty();
 	}
 
 	protected String getAccessToken() {

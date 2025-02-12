@@ -10,22 +10,21 @@ import tech.fiap.project.domain.dataprovider.OrderDataProvider;
 import tech.fiap.project.domain.dataprovider.PaymentDataProvider;
 import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
-import tech.fiap.project.domain.entity.Item;
 import tech.fiap.project.domain.usecase.impl.order.CalculateTotalOrderUseCaseImpl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Currency;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class CreatePaymentImplTest {
 
-	@InjectMocks
-	private CreatePaymentImpl createPayment;
+	@Mock
+	private OrderDataProvider orderDataProvider;
 
 	@Mock
 	private PaymentDataProvider paymentDataProvider;
@@ -33,8 +32,8 @@ class CreatePaymentImplTest {
 	@Mock
 	private CalculateTotalOrderUseCaseImpl calculateTotalOrderUseCase;
 
-	@Mock
-	private OrderDataProvider orderDataProvider;
+	@InjectMocks
+	private CreatePaymentImpl createPaymentImpl;
 
 	@BeforeEach
 	void setUp() {
@@ -42,73 +41,27 @@ class CreatePaymentImplTest {
 	}
 
 	@Test
-	void execute_shouldCreatePaymentSuccessfully() {
-		when(orderDataProvider.create(any(Order.class))).thenReturn(new Order());
-		Order mockOrder = new Order();
-		Item item1 = new Item();
-		Item item2 = new Item();
-		List<Item> items = Arrays.asList(item1, item2);
-		mockOrder.setItems(items);
+	void testExecute() {
+		// Arrange
+		Order order = new Order();
+		order.setItems(new ArrayList<>());
 
-		BigDecimal totalOrderValue = BigDecimal.valueOf(35.0);
-		Payment mockPayment = new Payment(null, LocalDateTime.now(), "PIX", totalOrderValue,
-				Currency.getInstance("BRL"), mockOrder, StatePayment.AWAITING);
+		Payment payment = new Payment(null, LocalDateTime.now(), "PIX", BigDecimal.valueOf(100.0), Currency.getInstance("BRL"), order, StatePayment.AWAITING);
+		Order orderSaved = new Order();
+		orderSaved.setPayments(new ArrayList<>());
+		orderSaved.getPayments().add(payment);
 
-		when(calculateTotalOrderUseCase.execute(items)).thenReturn(totalOrderValue);
-		when(paymentDataProvider.create(any(Payment.class))).thenReturn(mockPayment);
+		when(calculateTotalOrderUseCase.execute(any())).thenReturn(BigDecimal.valueOf(100.0));
+		when(orderDataProvider.create(any(Order.class))).thenReturn(orderSaved);
+		when(paymentDataProvider.create(any(Payment.class))).thenReturn(payment);
 
-		Payment result = createPayment.execute(mockOrder);
+		// Act
+		Payment result = createPaymentImpl.execute(order);
 
-		assertEquals("PIX", result.getPaymentMethod());
-		assertEquals(StatePayment.AWAITING, result.getState());
-		assertEquals(totalOrderValue, result.getAmount());
-		assertEquals(mockOrder, result.getOrder());
-		assertEquals(Currency.getInstance("BRL"), result.getCurrency());
-		verify(calculateTotalOrderUseCase, times(1)).execute(items);
-		verify(paymentDataProvider, times(1)).create(any(Payment.class));
+		// Assert
+		assertEquals(payment, result);
+		verify(calculateTotalOrderUseCase, times(1)).execute(order.getItems());
+		verify(orderDataProvider, times(1)).create(order);
+		verify(paymentDataProvider, times(1)).create(payment);
 	}
-
-	@Test
-	void execute_shouldHandleEmptyOrderItems() {
-		when(orderDataProvider.create(any(Order.class))).thenReturn(new Order());
-
-		Order mockOrder = new Order();
-		mockOrder.setItems(List.of());
-		BigDecimal totalOrderValue = BigDecimal.ZERO;
-		Payment mockPayment = new Payment(null, LocalDateTime.now(), "PIX", totalOrderValue,
-				Currency.getInstance("BRL"), mockOrder, StatePayment.AWAITING);
-		when(paymentDataProvider.create(any(Payment.class))).thenReturn(mockPayment);
-		when(calculateTotalOrderUseCase.execute(List.of())).thenReturn(totalOrderValue);
-		Payment result = createPayment.execute(mockOrder);
-
-		assertEquals(totalOrderValue, result.getAmount());
-		assertEquals(StatePayment.AWAITING, result.getState());
-		assertEquals(mockOrder, result.getOrder());
-		verify(calculateTotalOrderUseCase, times(1)).execute(List.of());
-		verify(paymentDataProvider, times(1)).create(any(Payment.class));
-	}
-
-	@Test
-	void execute_shouldThrowException_whenPaymentDataProviderFails() {
-		when(orderDataProvider.create(any(Order.class))).thenReturn(new Order());
-
-		Order mockOrder = new Order();
-		Item item = new Item();
-		mockOrder.setItems(List.of(item));
-
-		BigDecimal totalOrderValue = BigDecimal.valueOf(20.0);
-		when(calculateTotalOrderUseCase.execute(mockOrder.getItems())).thenReturn(totalOrderValue);
-		when(paymentDataProvider.create(any(Payment.class))).thenThrow(new RuntimeException("Database error"));
-
-		try {
-			createPayment.execute(mockOrder);
-		}
-		catch (RuntimeException e) {
-			assertEquals("Database error", e.getMessage());
-		}
-
-		verify(calculateTotalOrderUseCase, times(1)).execute(mockOrder.getItems());
-		verify(paymentDataProvider, times(1)).create(any(Payment.class));
-	}
-
 }

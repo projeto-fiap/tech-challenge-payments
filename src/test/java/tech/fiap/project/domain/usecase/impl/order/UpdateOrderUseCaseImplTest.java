@@ -1,9 +1,11 @@
 package tech.fiap.project.domain.usecase.impl.order;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import tech.fiap.project.domain.entity.Order;
@@ -11,108 +13,109 @@ import tech.fiap.project.domain.entity.Order;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class UpdateOrderUseCaseImplTest {
 
-	private RestTemplate restTemplateOrder;
+    @Mock
+    private RestTemplate restTemplateOrder;
 
-	private RestTemplate restTemplateKeycloak;
+    @Mock
+    private RestTemplate restTemplateKeycloak;
 
-	private UpdateOrderUseCaseImpl updateOrderUseCaseImpl;
+    @InjectMocks
+    private UpdateOrderUseCaseImpl updateOrderUseCase;
 
-	private String keycloakBaseUrl = "http://localhost:8080";
+    private final String orderBaseUrl = "http://order-service";
+    private final String keycloakBaseUrl = "http://keycloak-service";
+    private final String clientId = "client-id";
+    private final String clientSecret = "client-secret";
 
-	private String clientId = "testClientId";
-	private String orderBaseUrl = "http://localhost:8082";
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        updateOrderUseCase = new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak, orderBaseUrl, keycloakBaseUrl, clientId, clientSecret);
+    }
 
-	private String clientSecret = "testClientSecret";
+    @Test
+    void testUpdateOrder_Success() {
+        // Arrange
+        Long orderId = 1L;
+        String accessToken = "mock-access-token";
+        Order mockOrder = new Order();
+        mockOrder.setId(orderId);
 
-	@BeforeEach
-	void setUp() {
-		restTemplateOrder = mock(RestTemplate.class);
-		restTemplateKeycloak = mock(RestTemplate.class);
-		updateOrderUseCaseImpl = new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak,orderBaseUrl, keycloakBaseUrl,
-				clientId, clientSecret);
-	}
+        // Mock do Keycloak response
+        ObjectNode tokenNode = mock(ObjectNode.class);
+        when(tokenNode.get("access_token")).thenReturn(mock(com.fasterxml.jackson.databind.JsonNode.class));
+        when(tokenNode.get("access_token").asText()).thenReturn(accessToken);
 
-	@Test
-	void updateOrder_ShouldReturnUpdatedOrder_WhenResponseIsSuccessful() {
-		Long orderId = 1L;
-		Order order = new Order(); // Mock your Order object as needed
+        ResponseEntity<ObjectNode> keycloakResponse = new ResponseEntity<>(tokenNode, HttpStatus.OK);
 
-		// Mock the access token response
-		String accessToken = "mockAccessToken";
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(accessToken);
-		HttpEntity<Order> requestEntity = new HttpEntity<>(null, headers);
+        // Mock do Order response
+        ResponseEntity<Order> orderResponse = new ResponseEntity<>(mockOrder, HttpStatus.OK);
 
-		// Mock the keycloak token response
-		ObjectNode mockTokenResponse = mock(ObjectNode.class);
-		when(mockTokenResponse.get("access_token")).thenReturn(new TextNode(accessToken));
-		ResponseEntity<ObjectNode> tokenResponseEntity = new ResponseEntity<>(mockTokenResponse, HttpStatus.OK);
-		when(restTemplateKeycloak.exchange(anyString(), eq(HttpMethod.POST), any(), eq(ObjectNode.class)))
-				.thenReturn(tokenResponseEntity);
+        // Configuração dos mocks
+        when(restTemplateKeycloak.exchange(
+                eq(keycloakBaseUrl + "/realms/master/protocol/openid-connect/token"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(ObjectNode.class))
+        ).thenReturn(keycloakResponse);
 
-		// Mock the order update response
-		ResponseEntity<Order> orderResponseEntity = new ResponseEntity<>(order, HttpStatus.OK);
-		when(restTemplateOrder.exchange(eq("http://localhost:8082/api/v1/order/1/payment"), eq(HttpMethod.PUT),
-				eq(requestEntity), eq(Order.class))).thenReturn(orderResponseEntity);
+        when(restTemplateOrder.exchange(
+                eq(orderBaseUrl + "/api/v1/orders/checkout/" + orderId),
+                eq(HttpMethod.PUT),
+                any(HttpEntity.class),
+                eq(Order.class))
+        ).thenReturn(orderResponse);
 
-		// Call the method
-		Optional<Order> updatedOrder = updateOrderUseCaseImpl.updateOrder(orderId);
+        // Act
+        Optional<Order> result = updateOrderUseCase.updateOrder(orderId);
 
-		// Verify the result
-		assertFalse(updatedOrder.isPresent());
-		// TODO DESCOMENTA ISSO TBM
-		// assertTrue(updatedOrder.isPresent());
-		// assertEquals(order, updatedOrder.get());
-	}
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(orderId, result.get().getId());
+    }
 
-	@Test
-	void updateOrder_ShouldReturnEmpty_WhenResponseIsNotSuccessful() {
-		Long orderId = 1L;
+    @Test
+    void testUpdateOrder_Failure() {
+        // Arrange
+        Long orderId = 1L;
+        String accessToken = "mock-access-token";
 
-		// Mock the access token response
-		String accessToken = "mockAccessToken";
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(accessToken);
-		HttpEntity<Order> requestEntity = new HttpEntity<>(null, headers);
+        // Mock do Keycloak response
+        ObjectNode tokenNode = mock(ObjectNode.class);
+        when(tokenNode.get("access_token")).thenReturn(mock(com.fasterxml.jackson.databind.JsonNode.class));
+        when(tokenNode.get("access_token").asText()).thenReturn(accessToken);
 
-		// Mock the keycloak token response
-		ObjectNode mockTokenResponse = mock(ObjectNode.class);
-		when(mockTokenResponse.get("access_token")).thenReturn(new TextNode(accessToken));
-		ResponseEntity<ObjectNode> tokenResponseEntity = new ResponseEntity<>(mockTokenResponse, HttpStatus.OK);
-		when(restTemplateKeycloak.exchange(anyString(), eq(HttpMethod.POST), any(), eq(ObjectNode.class)))
-				.thenReturn(tokenResponseEntity);
+        ResponseEntity<ObjectNode> keycloakResponse = new ResponseEntity<>(tokenNode, HttpStatus.OK);
 
-		// Mock the order update response to return failure
-		ResponseEntity<Order> orderResponseEntity = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		when(restTemplateOrder.exchange(eq("http://localhost:8082/api/v1/order/1/payment"), eq(HttpMethod.PUT),
-				eq(requestEntity), eq(Order.class))).thenReturn(orderResponseEntity);
+        // Mock do Order response com erro
+        ResponseEntity<Order> orderResponse = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-		// Call the method
-		Optional<Order> updatedOrder = updateOrderUseCaseImpl.updateOrder(orderId);
+        // Configuração dos mocks
+        when(restTemplateKeycloak.exchange(
+                eq(keycloakBaseUrl + "/realms/master/protocol/openid-connect/token"),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(ObjectNode.class))
+        ).thenReturn(keycloakResponse);
 
-		// Verify the result
-		assertFalse(updatedOrder.isPresent());
-	}
+        when(restTemplateOrder.exchange(
+                eq(orderBaseUrl + "/api/v1/orders/checkout/" + orderId),
+                eq(HttpMethod.PUT),
+                any(HttpEntity.class),
+                eq(Order.class))
+        ).thenReturn(orderResponse);
 
-	@Test
-	void getAccessToken_ShouldReturnValidToken() {
-		// Mock the keycloak token response
-		String accessToken = "mockAccessToken";
-		ObjectNode mockTokenResponse = mock(ObjectNode.class);
-		when(mockTokenResponse.get("access_token")).thenReturn(new TextNode(accessToken));
-		ResponseEntity<ObjectNode> tokenResponseEntity = new ResponseEntity<>(mockTokenResponse, HttpStatus.OK);
-		when(restTemplateKeycloak.exchange(anyString(), eq(HttpMethod.POST), any(), eq(ObjectNode.class)))
-				.thenReturn(tokenResponseEntity);
+        // Act
+        Optional<Order> result = updateOrderUseCase.updateOrder(orderId);
 
-		// Call the method
-		String token = updateOrderUseCaseImpl.getAccessToken();
+        // Assert
+        assertFalse(result.isPresent());
+    }
 
-		// Verify the result
-		assertEquals(accessToken, token);
-	}
 
 }

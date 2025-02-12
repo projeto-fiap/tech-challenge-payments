@@ -1,12 +1,20 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Payment" type="Application" factoryName="Application">
+    <option name="envFilePaths">
+      <option value="$PROJECT_DIR$/.env" />
+    </option>
     <option name="MAIN_CLASS_NAME" value="tech.fiap.project.ProjectApplication" />
-    <module name="project" />
+    <module name="tech-challenge-payments" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="tech.fiap.project.*" />
         <option name="ENABLED" value="true" />
       </pattern>
+    </extension>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
     </extension>
     <method v="2">
       <option name="Make" enabled="true" />

@@ -122,7 +122,7 @@ public class Configuration {
 	@Bean
 	public UpdateOrderUseCaseImpl updateOrderUseCase(RestTemplate restTemplateOrder,
 			RestTemplate restTemplateKeycloak) {
-		return new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak, keycloakBaseUrl, paymentsClientId,
+		return new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak,ordersBaseUrl, keycloakBaseUrl, paymentsClientId,
 				paymentsClientSecret);
 	}
 

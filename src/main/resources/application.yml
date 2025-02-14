@@ -1,5 +1,5 @@
-#mongodb:
-#  uri: ${MONGO_URL:mongodb://adminuser:admin12345@documentdb-cluster.cluster-caetpmx4dios.us-east-1.docdb.amazonaws.com:27017/meuBanco?ssl=true}
+mongodb:
+  uri: ${MONGO_URL:mongodb://adminuser:admin12345@documentdb-cluster.cluster-caetpmx4dios.us-east-1.docdb.amazonaws.com:27017/meuBanco?ssl=true}
 spring:
   devtools:
     restart:

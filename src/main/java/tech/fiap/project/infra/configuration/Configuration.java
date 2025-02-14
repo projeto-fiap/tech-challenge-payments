@@ -122,8 +122,8 @@ public class Configuration {
 	@Bean
 	public UpdateOrderUseCaseImpl updateOrderUseCase(RestTemplate restTemplateOrder,
 			RestTemplate restTemplateKeycloak) {
-		return new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak,ordersBaseUrl, keycloakBaseUrl, paymentsClientId,
-				paymentsClientSecret);
+		return new UpdateOrderUseCaseImpl(restTemplateOrder, restTemplateKeycloak, ordersBaseUrl, keycloakBaseUrl,
+				paymentsClientId, paymentsClientSecret);
 	}
 
 	@Bean
@@ -133,10 +133,8 @@ public class Configuration {
 
 		ConnectionString connectionString = new ConnectionString(mongoUri);
 
-		return MongoClientSettings.builder()
-				.applyConnectionString(connectionString)
-				.applyToSslSettings(builder -> builder.enabled(true).context(sslContext))
-				.build();
+		return MongoClientSettings.builder().applyConnectionString(connectionString)
+				.applyToSslSettings(builder -> builder.enabled(true).context(sslContext)).build();
 	}
 
 }

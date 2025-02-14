@@ -32,6 +32,19 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Install Kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Clean and Compile
         run: mvn clean compile
@@ -156,3 +169,23 @@ jobs:
         shell: bash
         run:
           echo "Deploy HML"
+
+  deploy-prd:
+    runs-on: ubuntu-latest
+    environment:
+      name: hml
+    needs:
+      - analysis-sonarqube
+      - integrated-tests
+
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Update Kube Config
+        run: aws eks update-kubeconfig --name kubernetes-tech-challenge --region us-east-1
+      - name: Current Context
+        run: kubectl config current-context
+      - name: Deploy Kubernetes Resources
+        run: |
+                  kubectl apply -f src/main/resources/deploy/k8s/tech-challenge-payments-deployment.yaml -n default-namespace
+                  kubectl apply -f src/main/resources/deploy/k8s/hpa-tech-challenge-payments.yaml -n default-namespace
+                  kubectl apply -f src/main/resources/deploy/k8s/service-tech-challenge-payments.yaml -n default-namespace

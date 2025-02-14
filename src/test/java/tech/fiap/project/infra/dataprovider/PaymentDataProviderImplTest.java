@@ -58,7 +58,7 @@ class PaymentDataProviderImplTest {
 		// Arrange
 		Long paymentId = 1L;
 		PaymentEntity paymentEntity = new PaymentEntity();
-		Payment payment = new Payment( 1L, null, null, null, null, null, null);
+		Payment payment = new Payment(1L, null, null, null, null, null, null);
 		when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(paymentEntity));
 
 		// Act
@@ -142,7 +142,8 @@ class PaymentDataProviderImplTest {
 		when(entityManager.find(OrderEntity.class, 1L)).thenReturn(null);
 
 		// Act & Assert
-		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> paymentDataProvider.create(payment));
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+				() -> paymentDataProvider.create(payment));
 		assertEquals("Order not found for id 1", exception.getMessage());
 		verify(entityManager, times(1)).find(OrderEntity.class, 1L);
 		verify(paymentRepository, never()).save(any());
@@ -150,7 +151,7 @@ class PaymentDataProviderImplTest {
 
 	@Test
 	void create_ShouldSavePaymentWithoutOrder_WhenNoOrderIsProvided() {
-		Payment payment = new Payment( 1L, null, null, null, null, null, null);
+		Payment payment = new Payment(1L, null, null, null, null, null, null);
 		PaymentEntity paymentEntity = new PaymentEntity();
 		when(paymentRepository.save(any())).thenReturn(paymentEntity);
 
@@ -162,4 +163,5 @@ class PaymentDataProviderImplTest {
 		assertNull(result.getOrder());
 		verify(paymentRepository, times(1)).save(any());
 	}
+
 }

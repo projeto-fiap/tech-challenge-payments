@@ -29,7 +29,7 @@ spring:
         registration:
           keycloak:
             client-id: tech-challenge-payments
-            client-secret: Fcq5krDu6oATZ1mQtKqQ7uSWEOPnMdrM
+            client-secret: "**********"
             authorization-grant-type: client-credentials
             scope: openid, profile, email
             redirect-uri: ${KEYCLOAK_BASE_URL}/login/oauth2/code/keycloak

@@ -127,14 +127,13 @@ public class Configuration {
 	}
 
 	@Bean
-	public MongoClientSettings mongoClientSettings() throws Exception {
-		SSLContext sslContext = SSLContext.getInstance("TLS");
-		sslContext.init(null, null, null);
-
+	public MongoClientSettings mongoClientSettings() {
 		ConnectionString connectionString = new ConnectionString(mongoUri);
 
-		return MongoClientSettings.builder().applyConnectionString(connectionString)
-				.applyToSslSettings(builder -> builder.enabled(true).context(sslContext)).build();
+		return MongoClientSettings.builder()
+				.applyConnectionString(connectionString)
+				.applyToSslSettings(builder -> builder.enabled(false))
+				.build();
 	}
 
 }

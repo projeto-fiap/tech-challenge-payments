@@ -15,10 +15,10 @@ WORKDIR /app/tech-challenge-payments
 RUN apt-get update \
 && apt-get install --no-install-recommends -y build-essential maven \
 && apt-get clean \
-&& mvn clean install
+&& mvn clean install -DskipTests
 
 RUN useradd -m nonroot
 
 USER nonroot
 EXPOSE 8080
-CMD ["java", "-jar", "target/project-0.0.1-SNAPSHOT.jar", "--spring.profiles.active=prd"]
+CMD ["java", "-jar", "target/tech-challenge-payments-0.0.2-SNAPSHOT.jar", "--spring.profiles.active=prd"]

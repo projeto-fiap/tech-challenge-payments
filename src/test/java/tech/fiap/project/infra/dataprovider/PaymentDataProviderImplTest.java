@@ -2,26 +2,27 @@ package tech.fiap.project.infra.dataprovider;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
+import tech.fiap.project.domain.entity.Item;
+import tech.fiap.project.domain.entity.Order;
 import tech.fiap.project.domain.entity.Payment;
 import tech.fiap.project.infra.entity.OrderEntity;
 import tech.fiap.project.infra.entity.PaymentEntity;
-import tech.fiap.project.infra.mapper.PaymentRepositoryMapper;
 import tech.fiap.project.infra.repository.PaymentRepository;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class PaymentDataProviderImplTest {
+class PaymentDataProviderImplTest {
 
 	@Mock
 	private PaymentRepository paymentRepository;
@@ -32,72 +33,135 @@ public class PaymentDataProviderImplTest {
 	@InjectMocks
 	private PaymentDataProviderImpl paymentDataProvider;
 
-	private MockedStatic<PaymentRepositoryMapper> mockedMapper;
-
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		MockitoAnnotations.openMocks(this);
-		mockedMapper = mockStatic(PaymentRepositoryMapper.class);
 	}
-
-	@AfterEach
-	public void tearDown() {
-		mockedMapper.close();
-	}
-
 
 	@Test
-	public void testRetrieveAll() {
+	void retrieveAll_ShouldReturnListOfPayments() {
+		// Arrange
 		PaymentEntity paymentEntity = new PaymentEntity();
-		List<PaymentEntity> paymentEntities = List.of(paymentEntity);
-		when(paymentRepository.findAll()).thenReturn(paymentEntities);
+		when(paymentRepository.findAll()).thenReturn(List.of(paymentEntity));
 
+		// Act
 		List<Payment> payments = paymentDataProvider.retrieveAll();
 
+		// Assert
 		assertNotNull(payments);
+		assertEquals(1, payments.size());
 		verify(paymentRepository, times(1)).findAll();
 	}
 
 	@Test
-	public void testRetrieveById() {
-		Long id = 1L;
+	void retrieveById_ShouldReturnPayment_WhenIdExists() {
+		// Arrange
+		Long paymentId = 1L;
 		PaymentEntity paymentEntity = new PaymentEntity();
-		Payment payment = new Payment();
+		Payment payment = new Payment(1L, null, null, null, null, null, null);
+		when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(paymentEntity));
 
-		// Mock the repository to return the payment entity
-		when(paymentRepository.findById(id)).thenReturn(Optional.of(paymentEntity));
+		// Act
+		Optional<Payment> result = paymentDataProvider.retrieveById(paymentId);
 
-		// Mock the static methods of PaymentRepositoryMapper
-		mockedMapper.when(() -> PaymentRepositoryMapper.toDomainWithoutOrder(paymentEntity)).thenReturn(payment);
-
-		Optional<Payment> retrievedPayment = paymentDataProvider.retrieveById(id);
-
-		assertTrue(retrievedPayment.isPresent(), "Payment should be present");
-		assertEquals(payment, retrievedPayment.get());
-		verify(paymentRepository, times(1)).findById(id);
+		// Assert
+		assertTrue(result.isPresent());
+		verify(paymentRepository, times(1)).findById(paymentId);
 	}
+
 	@Test
-	public void testCreateWithExistingOrder() {
-		Payment payment = new Payment();
+	void retrieveById_ShouldReturnEmpty_WhenIdDoesNotExist() {
+		// Arrange
+		Long paymentId = 1L;
+		when(paymentRepository.findById(paymentId)).thenReturn(Optional.empty());
+
+		// Act
+		Optional<Payment> result = paymentDataProvider.retrieveById(paymentId);
+
+		// Assert
+		assertFalse(result.isPresent());
+		verify(paymentRepository, times(1)).findById(paymentId);
+	}
+
+	@Test
+	void create_ShouldSaveAndReturnPayment_WhenOrderExists() {
+		// Arrange
+		Payment payment = new Payment(1L, null, null, null, null, new Order(), null);
+		Order order = new Order();
+		ArrayList<Item> objects = new ArrayList<>();
+		Item e = new Item();
+		e.setIngredients(new ArrayList<>());
+		e.setId(1L);
+		e.setQuantity(BigDecimal.valueOf(1L));
+		e.setPrice(BigDecimal.valueOf(1.0));
+		objects.add(e);
+		order.setItems(objects);
+		order.setId(1L);
+		payment.setOrder(order);
+
+		PaymentEntity paymentEntity = new PaymentEntity();
 		OrderEntity orderEntity = new OrderEntity();
 		orderEntity.setId(1L);
-
-		PaymentEntity paymentEntity = new PaymentEntity();
 		paymentEntity.setOrder(orderEntity);
 
-		// Mock the entity manager to return the order entity
 		when(entityManager.find(OrderEntity.class, 1L)).thenReturn(orderEntity);
+		when(paymentRepository.save(any())).thenReturn(paymentEntity);
 
-		// Mock the static methods of PaymentRepositoryMapper
-		mockedMapper.when(() -> PaymentRepositoryMapper.toEntity(any(Payment.class))).thenReturn(paymentEntity);
-		mockedMapper.when(() -> PaymentRepositoryMapper.toDomainWithOrder(any(PaymentEntity.class))).thenReturn(payment);
+		// Act
+		Payment result = paymentDataProvider.create(payment);
 
-		Payment createdPayment = paymentDataProvider.create(payment);
-
-		assertNotNull(createdPayment);
+		// Assert
+		assertNotNull(result);
 		verify(entityManager, times(1)).find(OrderEntity.class, 1L);
+		verify(paymentRepository, times(1)).save(any());
 	}
+
+	@Test
+	void create_ShouldThrowException_WhenOrderDoesNotExist() {
+		// Arrange
+		Payment payment = new Payment(1L, null, null, null, null, null, null);
+		Order order = new Order();
+		ArrayList<Item> objects = new ArrayList<>();
+		Item e = new Item();
+		e.setIngredients(new ArrayList<>());
+		e.setId(1L);
+		e.setQuantity(BigDecimal.valueOf(1L));
+		e.setPrice(BigDecimal.valueOf(1.0));
+		objects.add(e);
+		order.setItems(objects);
+		order.setId(1L);
+		payment.setOrder(order);
+
+		payment.setOrder(order);
+
+		PaymentEntity paymentEntity = new PaymentEntity();
+		OrderEntity orderEntity = new OrderEntity();
+		orderEntity.setId(1L);
+		paymentEntity.setOrder(orderEntity);
+
+		when(entityManager.find(OrderEntity.class, 1L)).thenReturn(null);
+
+		// Act & Assert
+		EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+				() -> paymentDataProvider.create(payment));
+		assertEquals("Order not found for id 1", exception.getMessage());
+		verify(entityManager, times(1)).find(OrderEntity.class, 1L);
+		verify(paymentRepository, never()).save(any());
+	}
+
+	@Test
+	void create_ShouldSavePaymentWithoutOrder_WhenNoOrderIsProvided() {
+		Payment payment = new Payment(1L, null, null, null, null, null, null);
+		PaymentEntity paymentEntity = new PaymentEntity();
+		when(paymentRepository.save(any())).thenReturn(paymentEntity);
+
+		// Act
+		Payment result = paymentDataProvider.create(payment);
+
+		// Assert
+		assertNotNull(result);
+		assertNull(result.getOrder());
+		verify(paymentRepository, times(1)).save(any());
+	}
+
 }
-
-
-

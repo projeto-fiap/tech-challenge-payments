@@ -177,6 +177,7 @@ jobs:
     needs:
       - analysis-sonarqube
       - integrated-tests
+    uses: actions/checkout@v4
 
     if: github.ref == 'refs/heads/main'
     steps:

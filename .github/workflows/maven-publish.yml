@@ -177,7 +177,6 @@ jobs:
     needs:
       - analysis-sonarqube
       - integrated-tests
-    uses: actions/checkout@v4
 
     if: github.ref == 'refs/heads/main'
     steps:
@@ -186,6 +185,7 @@ jobs:
       - name: Current Context
         run: kubectl config current-context
       - name: Deploy Kubernetes Resources
+        uses: actions/checkout@v4
         run: |
                   kubectl apply -f src/main/resources/deploy/k8s/tech-challenge-payments-deployment.yaml -n default-namespace
                   kubectl apply -f src/main/resources/deploy/k8s/hpa-tech-challenge-payments.yaml -n default-namespace

@@ -180,12 +180,13 @@ jobs:
 
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: Update Kube Config
         run: aws eks update-kubeconfig --name kubernetes-tech-challenge --region us-east-1
       - name: Current Context
         run: kubectl config current-context
       - name: Deploy Kubernetes Resources
-        uses: actions/checkout@v4
         run: |
                   kubectl apply -f src/main/resources/deploy/k8s/tech-challenge-payments-deployment.yaml -n default-namespace
                   kubectl apply -f src/main/resources/deploy/k8s/hpa-tech-challenge-payments.yaml -n default-namespace

@@ -88,32 +88,34 @@ class PaymentDataProviderImplTest {
 		// Arrange
 		Payment payment = new Payment(1L, null, null, null, null, new Order(), null);
 		Order order = new Order();
-		ArrayList<Item> objects = new ArrayList<>();
-		Item e = new Item();
-		e.setIngredients(new ArrayList<>());
-		e.setId(1L);
-		e.setQuantity(BigDecimal.valueOf(1L));
-		e.setPrice(BigDecimal.valueOf(1.0));
-		objects.add(e);
-		order.setItems(objects);
+		ArrayList<Item> items = new ArrayList<>();
+		Item item = new Item();
+		item.setIngredients(new ArrayList<>());
+		item.setId(1L);
+		item.setQuantity(BigDecimal.valueOf(1L));
+		item.setPrice(BigDecimal.valueOf(1.0));
+		items.add(item);
+		order.setItems(items);
 		order.setId(1L);
 		payment.setOrder(order);
 
-		PaymentEntity paymentEntity = new PaymentEntity();
 		OrderEntity orderEntity = new OrderEntity();
 		orderEntity.setId(1L);
+
+		PaymentEntity paymentEntity = new PaymentEntity();
 		paymentEntity.setOrder(orderEntity);
 
+		// Mock do entityManager para retornar o OrderEntity existente
 		when(entityManager.find(OrderEntity.class, 1L)).thenReturn(orderEntity);
-		when(paymentRepository.save(any())).thenReturn(paymentEntity);
 
 		// Act
 		Payment result = paymentDataProvider.create(payment);
 
 		// Assert
 		assertNotNull(result);
-		verify(entityManager, times(1)).find(OrderEntity.class, 1L);
-		verify(paymentRepository, times(1)).save(any());
+		assertEquals(1L, result.getOrder().getId()); // Verifica se o Order foi associado corretamente
+		verify(entityManager, times(1)).find(OrderEntity.class, 1L); // Verifica se o entityManager.find foi chamado
+		verify(paymentRepository, never()).save(any()); // Verifica que o save não foi chamado
 	}
 
 	@Test
@@ -150,18 +152,17 @@ class PaymentDataProviderImplTest {
 	}
 
 	@Test
-	void create_ShouldSavePaymentWithoutOrder_WhenNoOrderIsProvided() {
+	void create_ShouldReturnPaymentWithoutOrder_WhenNoOrderIsProvided() {
+		// Arrange
 		Payment payment = new Payment(1L, null, null, null, null, null, null);
-		PaymentEntity paymentEntity = new PaymentEntity();
-		when(paymentRepository.save(any())).thenReturn(paymentEntity);
 
 		// Act
 		Payment result = paymentDataProvider.create(payment);
 
 		// Assert
 		assertNotNull(result);
-		assertNull(result.getOrder());
-		verify(paymentRepository, times(1)).save(any());
+		assertNull(result.getOrder()); // Verifica se o Order é nulo
+		verify(paymentRepository, never()).save(any()); // Verifica que o save não foi chamado
 	}
 
 }

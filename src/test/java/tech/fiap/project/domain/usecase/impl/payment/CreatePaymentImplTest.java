@@ -46,7 +46,8 @@ class CreatePaymentImplTest {
 		Order order = new Order();
 		order.setItems(new ArrayList<>());
 
-		Payment payment = new Payment(null, LocalDateTime.now(), "PIX", BigDecimal.valueOf(100.0), Currency.getInstance("BRL"), order, StatePayment.AWAITING);
+		Payment payment = new Payment(null, LocalDateTime.now(), "PIX", BigDecimal.valueOf(100.0),
+				Currency.getInstance("BRL"), order, StatePayment.AWAITING);
 		Order orderSaved = new Order();
 		orderSaved.setPayments(new ArrayList<>());
 		orderSaved.getPayments().add(payment);
@@ -64,4 +65,5 @@ class CreatePaymentImplTest {
 		verify(orderDataProvider, times(1)).create(order);
 		verify(paymentDataProvider, times(1)).create(payment);
 	}
+
 }

@@ -2,7 +2,8 @@ package tech.fiap.project.infra.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import tech.fiap.project.app.dto.StatePayment;
 
 import java.math.BigDecimal;
@@ -11,7 +12,8 @@ import java.util.Currency;
 
 @Entity
 @Table(name = "payment")
-@Data
+@Getter
+@Setter
 public class PaymentEntity {
 
 	@Id

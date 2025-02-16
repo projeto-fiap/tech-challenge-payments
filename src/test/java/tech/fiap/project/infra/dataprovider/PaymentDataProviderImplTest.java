@@ -45,7 +45,6 @@ public class PaymentDataProviderImplTest {
 		mockedMapper.close();
 	}
 
-
 	@Test
 	public void testRetrieveAll() {
 		PaymentEntity paymentEntity = new PaymentEntity();
@@ -76,6 +75,7 @@ public class PaymentDataProviderImplTest {
 		assertEquals(payment, retrievedPayment.get());
 		verify(paymentRepository, times(1)).findById(id);
 	}
+
 	@Test
 	public void testCreateWithExistingOrder() {
 		Payment payment = new Payment();
@@ -90,14 +90,13 @@ public class PaymentDataProviderImplTest {
 
 		// Mock the static methods of PaymentRepositoryMapper
 		mockedMapper.when(() -> PaymentRepositoryMapper.toEntity(any(Payment.class))).thenReturn(paymentEntity);
-		mockedMapper.when(() -> PaymentRepositoryMapper.toDomainWithOrder(any(PaymentEntity.class))).thenReturn(payment);
+		mockedMapper.when(() -> PaymentRepositoryMapper.toDomainWithOrder(any(PaymentEntity.class)))
+				.thenReturn(payment);
 
 		Payment createdPayment = paymentDataProvider.create(payment);
 
 		assertNotNull(createdPayment);
 		verify(entityManager, times(1)).find(OrderEntity.class, 1L);
 	}
+
 }
-
-
-

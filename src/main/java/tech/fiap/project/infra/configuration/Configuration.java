@@ -130,10 +130,8 @@ public class Configuration {
 	public MongoClientSettings mongoClientSettings() {
 		ConnectionString connectionString = new ConnectionString(mongoUri);
 
-		return MongoClientSettings.builder()
-				.applyConnectionString(connectionString)
-				.applyToSslSettings(builder -> builder.enabled(false))
-				.build();
+		return MongoClientSettings.builder().applyConnectionString(connectionString)
+				.applyToSslSettings(builder -> builder.enabled(false)).build();
 	}
 
 }

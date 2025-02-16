@@ -1,8 +1,10 @@
 package tech.fiap.project.app.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ConfirmPaymentDTO {
 
 	private OrderDTO order;

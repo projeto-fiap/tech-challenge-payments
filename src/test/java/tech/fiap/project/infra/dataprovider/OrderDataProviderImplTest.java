@@ -25,103 +25,104 @@ import static org.mockito.Mockito.*;
 
 public class OrderDataProviderImplTest {
 
-    @Mock
-    private OrderRepository orderRepository;
+	@Mock
+	private OrderRepository orderRepository;
 
-    @Mock
-    private ItemRepository itemRepository;
+	@Mock
+	private ItemRepository itemRepository;
 
-    @InjectMocks
-    private OrderDataProviderImpl orderDataProvider;
+	@InjectMocks
+	private OrderDataProviderImpl orderDataProvider;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this); // Inicializa os mocks
-    }
+	@BeforeEach
+	public void setUp() {
+		MockitoAnnotations.openMocks(this); // Inicializa os mocks
+	}
 
-    @Test
-    public void testCreateOrder() {
-        // Arrange
-        Order order = new Order();
-        order.setItems(Collections.emptyList()); // Lista vazia de itens
+	@Test
+	public void testCreateOrder() {
+		// Arrange
+		Order order = new Order();
+		order.setItems(Collections.emptyList()); // Lista vazia de itens
 
-        OrderEntity orderEntity = new OrderEntity();
-        orderEntity.setId(1L);
-        orderEntity.setCreatedDate(LocalDateTime.now());
-        orderEntity.setUpdatedDate(LocalDateTime.now());
-        orderEntity.setItems(Collections.emptyList());
-        orderEntity.setAwaitingTime(Duration.ofMinutes(30));
-        orderEntity.setTotalPrice(BigDecimal.valueOf(100.00));
+		OrderEntity orderEntity = new OrderEntity();
+		orderEntity.setId(1L);
+		orderEntity.setCreatedDate(LocalDateTime.now());
+		orderEntity.setUpdatedDate(LocalDateTime.now());
+		orderEntity.setItems(Collections.emptyList());
+		orderEntity.setAwaitingTime(Duration.ofMinutes(30));
+		orderEntity.setTotalPrice(BigDecimal.valueOf(100.00));
 
-        // Simula o comportamento do mapper (método estático)
-        try (var mockedMapper = mockStatic(OrderRepositoryMapper.class)) {
-            mockedMapper.when(() -> OrderRepositoryMapper.toEntityPayment(order)).thenReturn(orderEntity);
+		// Simula o comportamento do mapper (método estático)
+		try (var mockedMapper = mockStatic(OrderRepositoryMapper.class)) {
+			mockedMapper.when(() -> OrderRepositoryMapper.toEntityPayment(order)).thenReturn(orderEntity);
 
-            // Simula o comportamento do itemRepository
-            when(itemRepository.saveAll(anyList())).thenReturn(Collections.emptyList());
+			// Simula o comportamento do itemRepository
+			when(itemRepository.saveAll(anyList())).thenReturn(Collections.emptyList());
 
-            // Simula o comportamento do orderRepository
-            when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
+			// Simula o comportamento do orderRepository
+			when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
 
-            // Simula o comportamento do mapper para retornar o pedido salvo
-            mockedMapper.when(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity)).thenReturn(order);
+			// Simula o comportamento do mapper para retornar o pedido salvo
+			mockedMapper.when(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity)).thenReturn(order);
 
-            // Act
-            Order createdOrder = orderDataProvider.create(order);
+			// Act
+			Order createdOrder = orderDataProvider.create(order);
 
-            // Assert
-            assertNotNull(createdOrder); // Verifica se o pedido foi criado
-            mockedMapper.verify(() -> OrderRepositoryMapper.toEntityPayment(order), times(1));
-            verify(itemRepository, times(1)).saveAll(anyList());
-            verify(orderRepository, times(1)).save(orderEntity);
-            mockedMapper.verify(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity), times(1));
-        }
-    }
+			// Assert
+			assertNotNull(createdOrder); // Verifica se o pedido foi criado
+			mockedMapper.verify(() -> OrderRepositoryMapper.toEntityPayment(order), times(1));
+			verify(itemRepository, times(1)).saveAll(anyList());
+			verify(orderRepository, times(1)).save(orderEntity);
+			mockedMapper.verify(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity), times(1));
+		}
+	}
 
-    @Test
-    public void testRetrieveByPaymentId_OrderExists() {
-        // Arrange
-        Long paymentId = 123L;
-        OrderEntity orderEntity = new OrderEntity();
-        orderEntity.setId(1L);
-        orderEntity.setCreatedDate(LocalDateTime.now());
-        orderEntity.setUpdatedDate(LocalDateTime.now());
-        orderEntity.setItems(Collections.emptyList());
-        orderEntity.setAwaitingTime(Duration.ofMinutes(30));
-        orderEntity.setTotalPrice(BigDecimal.valueOf(100.00));
+	@Test
+	public void testRetrieveByPaymentId_OrderExists() {
+		// Arrange
+		Long paymentId = 123L;
+		OrderEntity orderEntity = new OrderEntity();
+		orderEntity.setId(1L);
+		orderEntity.setCreatedDate(LocalDateTime.now());
+		orderEntity.setUpdatedDate(LocalDateTime.now());
+		orderEntity.setItems(Collections.emptyList());
+		orderEntity.setAwaitingTime(Duration.ofMinutes(30));
+		orderEntity.setTotalPrice(BigDecimal.valueOf(100.00));
 
-        Order order = new Order();
+		Order order = new Order();
 
-        // Simula o comportamento do orderRepository
-        when(orderRepository.findByPaymentId(paymentId)).thenReturn(Optional.of(orderEntity));
+		// Simula o comportamento do orderRepository
+		when(orderRepository.findByPaymentId(paymentId)).thenReturn(Optional.of(orderEntity));
 
-        // Simula o comportamento do mapper (método estático)
-        try (var mockedMapper = mockStatic(OrderRepositoryMapper.class)) {
-            mockedMapper.when(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity)).thenReturn(order);
+		// Simula o comportamento do mapper (método estático)
+		try (var mockedMapper = mockStatic(OrderRepositoryMapper.class)) {
+			mockedMapper.when(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity)).thenReturn(order);
 
-            // Act
-            Order retrievedOrder = orderDataProvider.retrieveByPaymentId(paymentId);
+			// Act
+			Order retrievedOrder = orderDataProvider.retrieveByPaymentId(paymentId);
 
-            // Assert
-            assertNotNull(retrievedOrder); // Verifica se o pedido foi encontrado
-            verify(orderRepository, times(1)).findByPaymentId(paymentId);
-            mockedMapper.verify(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity), times(1));
-        }
-    }
+			// Assert
+			assertNotNull(retrievedOrder); // Verifica se o pedido foi encontrado
+			verify(orderRepository, times(1)).findByPaymentId(paymentId);
+			mockedMapper.verify(() -> OrderRepositoryMapper.toDomainWithPayment(orderEntity), times(1));
+		}
+	}
 
-    @Test
-    public void testRetrieveByPaymentId_OrderDoesNotExist() {
-        // Arrange
-        Long paymentId = 123L;
+	@Test
+	public void testRetrieveByPaymentId_OrderDoesNotExist() {
+		// Arrange
+		Long paymentId = 123L;
 
-        // Simula o comportamento do orderRepository (pedido não encontrado)
-        when(orderRepository.findByPaymentId(paymentId)).thenReturn(Optional.empty());
+		// Simula o comportamento do orderRepository (pedido não encontrado)
+		when(orderRepository.findByPaymentId(paymentId)).thenReturn(Optional.empty());
 
-        // Act
-        Order retrievedOrder = orderDataProvider.retrieveByPaymentId(paymentId);
+		// Act
+		Order retrievedOrder = orderDataProvider.retrieveByPaymentId(paymentId);
 
-        // Assert
-        assertNull(retrievedOrder); // Verifica que o pedido não foi encontrado
-        verify(orderRepository, times(1)).findByPaymentId(paymentId);
-    }
+		// Assert
+		assertNull(retrievedOrder); // Verifica que o pedido não foi encontrado
+		verify(orderRepository, times(1)).findByPaymentId(paymentId);
+	}
+
 }

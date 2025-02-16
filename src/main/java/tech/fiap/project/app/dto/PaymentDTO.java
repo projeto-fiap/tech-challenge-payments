@@ -1,13 +1,15 @@
 package tech.fiap.project.app.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import tech.fiap.project.domain.entity.Order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
 
-@Data
+@Getter
+@Setter
 public class PaymentDTO {
 
 	private Long id;

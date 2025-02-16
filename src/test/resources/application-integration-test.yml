@@ -7,25 +7,33 @@ spring:
     password: postgres
     driverClassName: org.h2.Driver
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master-test.xml
+    change-log: classpath:db/changelog/db.changelog-master.xml
     drop-first: true
     enabled: true
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-    show_sql: true
+    properties:
+      hibernate:
+      show_sql: true
   security:
     oauth2:
       client:
         registration:
-          google:
-            client-id: 148014085259-mtaqcvl0nm5t7tmb8r2iugf664pk9rc1.apps.googleusercontent.com
-            client-secret: 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
-            redirect-uri: http://localhost:8080
+          keycloak:
+            client-id: tech-challenge-payments
+            client-secret: Fcq5krDu6oATZ1mQtKqQ7uSWEOPnMdrM
+            authorization-grant-type: client-credentials
+            scope: openid, profile, email
+            redirect-uri: http://localhost:8080/login/oauth2/code/keycloak
+            client-name: Pagamentos
         provider:
-          google:
-            token-uri: https://oauth2.googleapis.com/token
+          keycloak:
+            token-uri: http://localhost:8080/realms/master/protocol/openid-connect/token
+            authorization-uri: http://localhost:8080/realms/master/protocol/openid-connect/auth
+            user-info-uri: http://localhost:8080/realms/master/protocol/openid-connect/userinfo
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/master
   main:
     allow-bean-definition-overriding: true
 logging:

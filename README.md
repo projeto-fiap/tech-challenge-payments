@@ -184,4 +184,8 @@ Responsáveis pela confirmação e gerenciamento do pagamento.
 
 - `POST /api/v1/payments/confirm/mock`: Simula a confirmação do pagamento de um pedido.
 
+## Cobertura de testes com o Sonar cloud
 
+https://sonarcloud.io/summary/overall?id=projeto-fiap_tech-challenge-payments&branch=main
+
+![img.png](img.png)

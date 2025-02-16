@@ -68,7 +68,7 @@ jobs:
       - name: Unit Tests
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn  '-Dtest=!tech.integration.fiap.**' test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DsonarToken=$SONAR_TOKEN
+        run: mvn  '-Dtest=!tech.integration.payment.**' test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DsonarToken=$SONAR_TOKEN
 
   integrated-tests:
     name: Integrated Tests
@@ -97,7 +97,7 @@ jobs:
       - name: Unit Tests
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn  '-Dtest=tech.integration.fiap.**' test
+        run: mvn  '-Dtest=tech.integration.payment.**' test
   analysis-sonarqube:
     name: Quality Gate
     runs-on: ubuntu-latest

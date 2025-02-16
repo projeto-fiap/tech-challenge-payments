@@ -24,16 +24,16 @@ spring:
             client-secret: Fcq5krDu6oATZ1mQtKqQ7uSWEOPnMdrM
             authorization-grant-type: client-credentials
             scope: openid, profile, email
-            redirect-uri: ${KEYCLOAK_BASE_URL:http://localhost:8080}/login/oauth2/code/keycloak
+            redirect-uri: http://localhost:8080/login/oauth2/code/keycloak
             client-name: Pagamentos
         provider:
           keycloak:
-            token-uri: ${KEYCLOAK_BASE_URL:http://localhost:8080}/realms/master/protocol/openid-connect/token
-            authorization-uri: ${KEYCLOAK_BASE_URL:http://localhost:8080}/realms/master/protocol/openid-connect/auth
-            user-info-uri: ${KEYCLOAK_BASE_URL:http://localhost:8080}/realms/master/protocol/openid-connect/userinfo
+            token-uri: http://localhost:8080/realms/master/protocol/openid-connect/token
+            authorization-uri: http://localhost:8080/realms/master/protocol/openid-connect/auth
+            user-info-uri: http://localhost:8080/realms/master/protocol/openid-connect/userinfo
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_BASE_URL:http://localhost:8080}/realms/master
+          issuer-uri: http://localhost:8080/realms/master
   main:
     allow-bean-definition-overriding: true
 logging:

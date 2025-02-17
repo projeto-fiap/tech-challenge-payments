@@ -31,4 +31,4 @@ spec:
             - name: MONGO_URL
               value: mongodb://mongodb-service.default-namespace.svc.cluster.local:27017/mydatabase
             - name: KEYCLOAK_BASE_URL
-              value: http://a35eaf96976814aafa0800213cb0a901-1833872259.us-east-1.elb.amazonaws.com
+              value: http://a740e813c410c4d05a99835a58e149d0-1270066710.us-east-1.elb.amazonaws.com

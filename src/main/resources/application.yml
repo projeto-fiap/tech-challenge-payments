@@ -60,7 +60,7 @@ tech-challenge:
     client-id: tech-challenge-payments
     client-secret: "**********"
   orders:
-    base-url: http://localhost:8082
+    base-url: ${ORDER_BASE_URL:http://localhost:8082}
 
 
 springdoc:

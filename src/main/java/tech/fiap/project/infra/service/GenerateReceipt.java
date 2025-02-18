@@ -12,7 +12,6 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import tech.fiap.project.domain.dataprovider.ReceiptDataProvider;
 import tech.fiap.project.domain.entity.Payment;
 import tech.fiap.project.domain.entity.Receipt;
@@ -21,6 +20,7 @@ import tech.fiap.project.infra.exception.FileNotFound;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -45,10 +45,12 @@ public class GenerateReceipt implements GenerateReceiptUseCase {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 		String dataHoraFormatada = dataHoraAtual.format(formatter);
 		try {
-			File logoFile = ResourceUtils.getFile("classpath:logo_fiap.png");
-			String absolutePath = ResourceUtils.getFile("classpath:TEMP").getAbsolutePath()
-					+ "/comprovante_pagamento.pdf";
-			file = new File(absolutePath);
+			InputStream logoStream = getClass().getClassLoader().getResourceAsStream("logo_fiap.png");
+			File tempDir = new File(System.getProperty("java.io.tmpdir"), "TEMP");
+			if (!tempDir.exists()) {
+				tempDir.mkdirs();
+			}
+			File file = new File(tempDir, "comprovante_pagamento.pdf");;
 			PdfWriter writer = new PdfWriter(file);
 			PdfDocument pdfDoc = new PdfDocument(writer);
 			Document document = new Document(pdfDoc);
@@ -85,7 +87,7 @@ public class GenerateReceipt implements GenerateReceiptUseCase {
 			document.add(new Paragraph("").setMarginTop(80));
 
 			try {
-				ImageData imageData = ImageDataFactory.create(logoFile.getAbsolutePath());
+				ImageData imageData = ImageDataFactory.create(logoStream.readAllBytes());
 				Image logo = new Image(imageData);
 				logo.setWidth(600);
 				logo.setHeight(300);

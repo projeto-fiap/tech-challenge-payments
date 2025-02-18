@@ -32,3 +32,5 @@ spec:
               value: mongodb://mongodb-service.default-namespace.svc.cluster.local:27017/mydatabase
             - name: KEYCLOAK_BASE_URL
               value: http://a740e813c410c4d05a99835a58e149d0-1270066710.us-east-1.elb.amazonaws.com
+            - name: ORDER_BASE_URL
+              value: http://a67d717ba3572466c8dcfae5401626b4-798609356.us-east-1.elb.amazonaws.com
